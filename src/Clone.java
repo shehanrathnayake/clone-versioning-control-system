@@ -7,49 +7,67 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class CloneMain {
+public class Clone {
     public static String targetFolderPath;
     public static String mainRepoPath;
     public static ArrayList<FileDetails> contents = new ArrayList<>();
     public static ArrayList<String> hashCodes = new ArrayList<>();
-    public static boolean initialized = false;
+    public static final String YELLOW_COLOR = "\033[33;1m";
+    public static final String RED_COLOR = "\033[31;1m";
+    public static final String RESET = "\033[0m";
     public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+
         if (args.length == 0) {
             targetFolderPath = "";
         } else {
             targetFolderPath = args[0];
         }
-        mainRepoPath = targetFolderPath + ".clone";
+        mainRepoPath = targetFolderPath + ".clone/";
         File folderBase = new File(mainRepoPath);
         if (folderBase.exists()) {
             takeHashCodes();
 
         }
-//        if (initialized) takeHashCodes();
 
         while(true) {
-            System.out.print("\nTo start a repository => clone start\nMake files => clone make\nSave Clone => clone save\nClone log => clone log\n\nEnter the command: ");
+            System.out.print("\nStart a repository => " + RED_COLOR + "clone start" + RESET + "\nMake files => " + RED_COLOR + "clone make" + RESET +"\nSave Clone => " + RED_COLOR + "clone save" + RESET + "\nClone log => " + RED_COLOR + "clone log" + RESET + "\n\nEnter the command: ");
             String command = scanner.nextLine();
             Path targetFolder = Paths.get(targetFolderPath);
 
             switch (command) {
                 case "clone start":
-                    start(targetFolder);
-                    takeHashCodes();
-//                    initialized = true;
+                    if (!folderBase.exists()) {
+                        start(targetFolder);
+                        takeHashCodes();
+                        System.out.println("New repository is created...");
+
+                    }else System.out.println("Already a repository");
                     break;
+
                 case "clone make":
-                    Files.walkFileTree(targetFolder, new MyFileVisitor());
+                    if (folderBase.exists()) Files.walkFileTree(targetFolder, new MyFileVisitor());
+                    else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
                     break;
+
                 case "clone save":
-                    save(targetFolder);
-                    contents = new ArrayList<>();
+                    if (folderBase.exists()) {
+                        save(targetFolder);
+                        contents = new ArrayList<>();
+                    }
+                    else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
                     break;
+
                 case "clone log":
-                    if (hashCodes.size() == 0) takeHashCodes();
-                    showClones();
+                    if (folderBase.exists()) {
+                        if (hashCodes.size() == 0) takeHashCodes();
+                        showClones();
+                    }
+                    else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
+                    break;
+
                 default:
+                    System.out.println("Not a command");
             }
         }
     }
@@ -145,17 +163,12 @@ public class CloneMain {
     }
 
     private static void showClones() {
-        final String GREEN_COLOR = "\033[33;1m";
-        final String RED_COLOR = "\033[31;1m";
-        final String RESET = "\033[0m";
-        boolean firstTime = true;
-        for (String hashCode : hashCodes) {
-            System.out.print(GREEN_COLOR + hashCode.substring(0,7) + RESET);
-            if (firstTime) {
-                System.out.println(" " + RED_COLOR + "(HEAD -> main)" + RESET);
-                firstTime = false;
-            }
-            else System.out.println(" \n");
+        System.out.println();
+        for (int i = hashCodes.size() -1; i >= 0; i--) {
+            System.out.print(YELLOW_COLOR + hashCodes.get(i).substring(0,7) + RESET);
+            if (i == hashCodes.size() -1) System.out.print(" " + RED_COLOR + "(HEAD -> main)" + RESET);
+
+            System.out.println();
         }
     }
 }

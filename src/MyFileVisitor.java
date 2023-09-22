@@ -12,13 +12,13 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         String path = file.toAbsolutePath().toString();
-        Pattern pattern = Pattern.compile(CloneMain.mainRepoPath);
+        Pattern pattern = Pattern.compile(Clone.mainRepoPath);
         Matcher matcher = pattern.matcher(path);
 
         if (!matcher.find()) {
             byte[] buffer = getBytes(file);
             FileDetails fileDetails = new FileDetails(path, buffer);
-            CloneMain.contents.add(fileDetails);
+            Clone.contents.add(fileDetails);
             buffer = null;
         }
 
