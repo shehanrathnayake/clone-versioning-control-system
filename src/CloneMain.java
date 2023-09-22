@@ -20,12 +20,16 @@ public class CloneMain {
         } else {
             targetFolderPath = args[0];
         }
-        File folderBase = new File(targetFolderPath + ".clone");
-        if (folderBase.exists()) takeHashCodes();
+        mainRepoPath = targetFolderPath + ".clone";
+        File folderBase = new File(mainRepoPath);
+        if (folderBase.exists()) {
+            takeHashCodes();
+
+        }
 //        if (initialized) takeHashCodes();
 
         while(true) {
-            System.out.print("\nTo start a repository => clone start\nMake files => clone make\nSave Clone => clone save\n\nEnter the command: ");
+            System.out.print("\nTo start a repository => clone start\nMake files => clone make\nSave Clone => clone save\nClone log => clone log\n\nEnter the command: ");
             String command = scanner.nextLine();
             Path targetFolder = Paths.get(targetFolderPath);
 
@@ -42,6 +46,9 @@ public class CloneMain {
                     save(targetFolder);
                     contents = new ArrayList<>();
                     break;
+                case "clone log":
+                    if (hashCodes.size() == 0) takeHashCodes();
+                    showClones();
                 default:
             }
         }
@@ -50,14 +57,13 @@ public class CloneMain {
         String ignoreFilePath = targetFolder.toAbsolutePath().toString() + "/.clone/";
         String[] ignorePaths = {"", "clones", "clone-hash", ".ignoreclone"};
         for (String ignorePath : ignorePaths) {
-            File fileRef = new File(ignoreFilePath + ignorePath);
+            File fileRef = new File(mainRepoPath + ignorePath);
             fileRef.mkdir();
         }
 
         File fileHash = new File(ignoreFilePath + "clone-hash/clonehash.txt");
         fileHash.createNewFile();
 
-        CloneMain.mainRepoPath = ignoreFilePath;
     }
 
     private static void save(Path targetFolder) throws IOException, NoSuchAlgorithmException {
@@ -135,6 +141,21 @@ public class CloneMain {
             oos.writeObject(hashCodes);
         } finally {
             oos.close();
+        }
+    }
+
+    private static void showClones() {
+        final String GREEN_COLOR = "\033[33;1m";
+        final String RED_COLOR = "\033[31;1m";
+        final String RESET = "\033[0m";
+        boolean firstTime = true;
+        for (String hashCode : hashCodes) {
+            System.out.print(GREEN_COLOR + hashCode.substring(0,7) + RESET);
+            if (firstTime) {
+                System.out.println(" " + RED_COLOR + "(HEAD -> main)" + RESET);
+                firstTime = false;
+            }
+            else System.out.println(" \n");
         }
     }
 }
