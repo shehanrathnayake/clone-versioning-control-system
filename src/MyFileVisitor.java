@@ -1,5 +1,3 @@
-import op.FileDetails;
-
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,8 +16,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         Matcher matcher = pattern.matcher(path);
 
         if (!matcher.find()) {
-            System.out.println(path);
-
             byte[] buffer = getBytes(file);
             FileDetails fileDetails = new FileDetails(path, buffer);
             CloneMain.contents.add(fileDetails);
