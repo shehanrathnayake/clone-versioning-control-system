@@ -1,9 +1,7 @@
-import op.MyFileVisitor;
 import op.FileDetails;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +11,7 @@ import java.util.Scanner;
 public class CloneMain {
     public static String targetFolderPath;
     public static String mainRepoPath;
-    public static ArrayList<FileDetails> contents = new ArrayList<>();
+    public static ArrayList<FileDetails> contents = new ArrayList<op.FileDetails>();
     public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException {
         if (args.length == 0) {
@@ -38,7 +36,7 @@ public class CloneMain {
                     break;
                 case "clone save":
                     save(targetFolder);
-                    contents = new ArrayList<>();
+                    contents = new ArrayList<op.FileDetails>();
                     System.out.println(contents.size());
                     break;
                 default:
