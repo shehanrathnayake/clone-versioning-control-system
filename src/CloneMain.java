@@ -103,19 +103,22 @@ public class CloneMain {
     }
 
     private static void takeHashCodes() throws IOException {
-        File hashFile = new File(targetFolderPath + "/.clone/clone-hash/clonehash.txt");
-        FileInputStream fis = new FileInputStream(hashFile);
+        Path pathToHashCodes = Paths.get(targetFolderPath + ".clone/clone-hash/clonehash.txt");
+//        File hashFile = new File(targetFolderPath + "/.clone/clone-hash/clonehash.txt");
+//        System.out.println();
+        FileInputStream fis = new FileInputStream(pathToHashCodes.toAbsolutePath().toString());
         BufferedInputStream bis = new BufferedInputStream(fis);
-        ObjectInputStream ois = new ObjectInputStream(bis);
+        ObjectInputStream ois = null;
         try {
+            ois = new ObjectInputStream(bis);
             hashCodes = (ArrayList<String>) ois.readObject();
+            ois.close();
+        } catch (NullPointerException e) {
 
         } catch (EOFException e) {
 
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
-        } finally {
-            ois.close();
         }
     }
 }
