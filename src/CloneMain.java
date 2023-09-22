@@ -48,7 +48,7 @@ public class CloneMain {
 
     private static void start(Path targetFolder) throws IOException {
         String ignoreFilePath = targetFolder.toAbsolutePath().toString() + "/.clone/";
-        String[] ignorePaths = {"", "clones", "clone-hash", "clone-hash/clonehash.txt", ".ignoreclone"};
+        String[] ignorePaths = {"", "clones", "clone-hash", ".ignoreclone"};
         for (String ignorePath : ignorePaths) {
             File fileRef = new File(ignoreFilePath + ignorePath);
             fileRef.mkdir();
