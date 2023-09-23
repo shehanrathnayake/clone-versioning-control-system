@@ -14,7 +14,6 @@ public class Clone {
     public static String mainRepoPath;
     public static ArrayList<FileDetails> contents = new ArrayList<>();
     public static ArrayList<String> hashCodes = new ArrayList<>();
-    public static boolean isDestroy = false;
     public static final String YELLOW_COLOR = "\033[33;1m";
     public static final String RED_COLOR = "\033[31;1m";
     public static final String BLUE_COLOR = "\033[34;1m";
@@ -231,7 +230,7 @@ public class Clone {
         if (hashCodes.size() == 0) takeHashCodes();
         for (String code : hashCodes) {
             if (hashCode.equals(code.substring(0,7))) {
-                destroyPresent();
+                destroyPresent(new File(targetFolderPath));
                 activateClone(code);
                 return;
             }
@@ -257,7 +256,15 @@ public class Clone {
 
     private static void extractClone(SaveNode clone) throws IOException {
         for (FileDetails files : clone.getContents()) {
-//            if (files.getPath().substring(files.getPath().length()-files.)
+
+            String fileName = "/[.]?[A-Za-z0-9_[-] ]+[.][A-Za-z]+$";
+            Pattern pattern = Pattern.compile(fileName);
+            Matcher matcher = pattern.matcher(files.getPath());
+            matcher.find();
+            String directoryPath = files.getPath().substring(0, matcher.start());
+            File directory = new File(directoryPath);
+            if (!directory.exists()) directory.mkdir();
+
             File cloneFile = new File(files.getPath());
             FileOutputStream fos = new FileOutputStream(cloneFile);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -271,10 +278,15 @@ public class Clone {
         }
     }
 
-    private static void destroyPresent() throws IOException {
-        isDestroy = true;
-        Path targetFolder = Paths.get(targetFolderPath);
-        Files.walkFileTree(targetFolder, new MyFileVisitor());
-        isDestroy = false;
+    private static void destroyPresent(File file) throws IOException {
+        if (file.isDirectory()) {
+            File[] fileList = file.listFiles();
+            for (File contentFile : fileList) {
+                if (!contentFile.getName().equals(".clone")) {
+                    destroyPresent(contentFile);
+                }
+            }
+        }
+        file.delete();
     }
 }
