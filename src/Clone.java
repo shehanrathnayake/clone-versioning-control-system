@@ -14,6 +14,7 @@ public class Clone {
     public static String mainRepoPath;
     public static ArrayList<FileDetails> contents = new ArrayList<>();
     public static ArrayList<String> hashCodes = new ArrayList<>();
+    public static boolean isDistroy = false;
     public static final String YELLOW_COLOR = "\033[33;1m";
     public static final String RED_COLOR = "\033[31;1m";
     public static final String BLUE_COLOR = "\033[34;1m";
@@ -35,7 +36,7 @@ public class Clone {
         }
 
         while(true) {
-            System.out.print("\nStart a repository => " + RED_COLOR + "clone start" + RESET + "\nMake files => " + RED_COLOR + "clone make" + RESET +"\nSave Clone => " + RED_COLOR + "clone save" + RESET + "\nClone log => " + RED_COLOR + "clone log" + RESET + "\nActivate a clone => " + RED_COLOR + "clone activate " + BLUE_COLOR + "hashcode" + RESET + "\n\nEnter the command: ");
+            System.out.print("\nStart a repository => " + RED_COLOR + "clone start" + RESET + "\nMake files => " + RED_COLOR + "clone make" + RESET +"\nSave Clone => " + RED_COLOR + "clone save" + RESET + "\nClone log => " + RED_COLOR + "clone log" + RESET + "\nActivate a clone => " + RED_COLOR + "clone activate " + YELLOW_COLOR + "hashcode" + RESET + "\n\nEnter the command: ");
             String command = scanner.nextLine();
             Path targetFolder = Paths.get(targetFolderPath);
 
@@ -50,14 +51,21 @@ public class Clone {
                     break;
 
                 case "clone make":
-                    if (folderBase.exists()) Files.walkFileTree(targetFolder, new MyFileVisitor());
+                    if (hashCodes.size() == 0) takeHashCodes();
+                    if (folderBase.exists()) {
+                        if (getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) Files.walkFileTree(targetFolder, new MyFileVisitor());
+                        else System.out.println("Not in the present clone");
+                    }
                     else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
                     break;
 
                 case "clone save":
+                    if (hashCodes.size() == 0) takeHashCodes();
                     if (folderBase.exists()) {
-                        save(targetFolder);
-                        contents = new ArrayList<>();
+                        if (getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
+                            save(targetFolder);
+                            contents = new ArrayList<>();
+                        } else System.out.println("Not in the present clone");
                     }
                     else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
                     break;
@@ -71,10 +79,13 @@ public class Clone {
                     break;
 
                 default:
-                    Pattern pattern = Pattern.compile("^clone activate [A-Z0-9]{7}$");
-                    Matcher matcher = pattern.matcher(command);
-                    if (matcher.find()) selectClone(command.substring(command.length()-7));
-                    else System.out.println("Not a command");
+                    if (folderBase.exists()) {
+                        Pattern pattern = Pattern.compile("^clone activate [A-Z0-9]{7}$");
+                        Matcher matcher = pattern.matcher(command);
+                        if (matcher.find()) selectClone(command.substring(command.length()-7));
+                        else System.out.println("Not a command");
+
+                    } else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
             }
         }
     }
@@ -220,6 +231,7 @@ public class Clone {
         if (hashCodes.size() == 0) takeHashCodes();
         for (String code : hashCodes) {
             if (hashCode.equals(code.substring(0,7))) {
+                destroyPresent();
                 activateClone(code);
                 return;
             }
@@ -245,6 +257,7 @@ public class Clone {
 
     private static void extractClone(SaveNode clone) throws IOException {
         for (FileDetails files : clone.getContents()) {
+//            if (files.getPath().substring(files.getPath().length()-files.)
             File cloneFile = new File(files.getPath());
             FileOutputStream fos = new FileOutputStream(cloneFile);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -256,5 +269,12 @@ public class Clone {
                 bos.close();
             }
         }
+    }
+
+    private static void destroyPresent() throws IOException {
+        isDistroy = true;
+        Path targetFolder = Paths.get(targetFolderPath);
+        Files.walkFileTree(targetFolder, new MyFileVisitor());
+        isDistroy = false;
     }
 }

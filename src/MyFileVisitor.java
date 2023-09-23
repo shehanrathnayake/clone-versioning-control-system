@@ -2,6 +2,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -16,10 +17,13 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         Matcher matcher = pattern.matcher(path);
 
         if (!matcher.find()) {
-            byte[] buffer = getBytes(file);
-            FileDetails fileDetails = new FileDetails(path, buffer);
-            Clone.contents.add(fileDetails);
-            buffer = null;
+            if (Clone.isDistroy) {
+                Files.delete(file);
+            } else {
+                byte[] buffer = getBytes(file);
+                FileDetails fileDetails = new FileDetails(path, buffer);
+                Clone.contents.add(fileDetails);
+            }
         }
 
         return FileVisitResult.CONTINUE;
