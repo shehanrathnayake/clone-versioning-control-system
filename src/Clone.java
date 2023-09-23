@@ -86,9 +86,11 @@ public class Clone {
             fileRef.mkdir();
         }
 
-        File fileHash = new File(ignoreFilePath + "clone-hash/clonehash.txt");
-        fileHash.createNewFile();
-
+        String[] repoFiles = {"clone-hash/clonehash.txt", "clone-hash/headhash.txt"};
+        for (String repoFile : repoFiles) {
+            File fileHash = new File(ignoreFilePath + repoFile);
+            fileHash.createNewFile();
+        }
     }
 
     private static void save(Path targetFolder) throws IOException, NoSuchAlgorithmException {
@@ -111,6 +113,7 @@ public class Clone {
             if (successfull) {
                 hashCodes.add(hashCode);
                 logHashCodes();
+                setHeadClone(hashCode);
             }
         }
     }
@@ -134,7 +137,6 @@ public class Clone {
             String hex = String.format("%02X", b);
             hexStringCode.append(hex);
         }
-
         return hexStringCode.toString();
     }
 
@@ -161,7 +163,6 @@ public class Clone {
         FileOutputStream fos = new FileOutputStream(pathToHashCodes.toAbsolutePath().toString());
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         ObjectOutputStream oos = new ObjectOutputStream(bos);
-
         try {
             oos.writeObject(hashCodes);
         } finally {
@@ -169,12 +170,47 @@ public class Clone {
         }
     }
 
-    private static void showClones() {
+    private static void setHeadClone(String headCloneCode) throws IOException {
+        Path pathToHeadCloneCode = Paths.get(targetFolderPath + ".clone/clone-hash/headhash.txt");
+        FileOutputStream fos = new FileOutputStream(pathToHeadCloneCode.toAbsolutePath().toString());
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        try {
+            bos.write(headCloneCode.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            bos.close();
+        }
+    }
+
+    private static String getHeadClone() throws IOException {
+        String headHashCode = "";
+        Path pathToHeadCloneCode = Paths.get(targetFolderPath + ".clone/clone-hash/headhash.txt");
+        FileInputStream fis = new FileInputStream(pathToHeadCloneCode.toAbsolutePath().toString());
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        try {
+            byte[] buffer = bis.readAllBytes();
+            headHashCode = new String(buffer);
+        } finally {
+            bis.close();
+        }
+        return headHashCode;
+    }
+
+    private static void showClones() throws IOException {
         System.out.println();
+        String headHashCode = getHeadClone();
+        boolean done = false;
         for (int i = hashCodes.size() -1; i >= 0; i--) {
             System.out.print(YELLOW_COLOR + hashCodes.get(i).substring(0,7) + RESET);
-            if (i == hashCodes.size() -1) System.out.print(" " + RED_COLOR + "(HEAD -> main)" + RESET);
-
+            if (i == hashCodes.size() -1 && hashCodes.get(i).equals(headHashCode)) {
+                System.out.print(" " + RED_COLOR + "(HEAD -> main)" + RESET);
+                done = true;
+            }
+            else if (!done) {
+                if (i == hashCodes.size() -1 && !hashCodes.get(i).equals(headHashCode)) System.out.print(" " + RED_COLOR + "(main)" + RESET);
+                else if (hashCodes.get(i).equals(headHashCode)) System.out.print(" " + RED_COLOR + "(HEAD)" + RESET);
+            }
             System.out.println();
         }
     }
@@ -182,13 +218,8 @@ public class Clone {
                         /* Activating clone */
     private static void selectClone(String hashCode) throws IOException {
         if (hashCodes.size() == 0) takeHashCodes();
-        System.out.println("Entered to method");
-        System.out.println(hashCode);
         for (String code : hashCodes) {
-            System.out.println(code.substring(0,7));
             if (hashCode.equals(code.substring(0,7))) {
-//                System.out.println(hashCode);
-//                System.out.println(code.substring(0,7));
                 activateClone(code);
                 return;
             }
@@ -204,6 +235,7 @@ public class Clone {
         try {
             SaveNode cloneObject = (SaveNode) ois.readObject();
             extractClone(cloneObject);
+            setHeadClone(hashCode);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } finally {
