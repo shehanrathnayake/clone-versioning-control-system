@@ -89,7 +89,6 @@ public class Clone {
         }
     }
     private static void start(Path targetFolder) throws IOException {
-        String ignoreFilePath = targetFolder.toAbsolutePath().toString() + "/.clone/";
         String[] ignorePaths = {"", "clones", "clone-hash", ".ignoreclone"};
         for (String ignorePath : ignorePaths) {
             File fileRef = new File(mainRepoPath + ignorePath);
@@ -98,7 +97,7 @@ public class Clone {
 
         String[] repoFiles = {"clone-hash/clonehash.txt", "clone-hash/headhash.txt"};
         for (String repoFile : repoFiles) {
-            File fileHash = new File(ignoreFilePath + repoFile);
+            File fileHash = new File(Clone.mainRepoPath + repoFile);
             fileHash.createNewFile();
         }
     }
