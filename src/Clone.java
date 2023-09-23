@@ -21,12 +21,12 @@ public class Clone {
     public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 
-        if (args.length == 0) {
-            targetFolderPath = "";
-        } else {
-            targetFolderPath = args[0];
-        }
-//        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
+//        if (args.length == 0) {
+//            targetFolderPath = "";
+//        } else {
+//            targetFolderPath = args[0];
+//        }
+        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
         mainRepoPath = targetFolderPath + ".clone/";
         File folderBase = new File(mainRepoPath);
         if (folderBase.exists()) {
@@ -50,18 +50,18 @@ public class Clone {
                     break;
 
                 case "clone make":
-                    if (hashCodes.size() == 0) takeHashCodes();
                     if (folderBase.exists()) {
-                        if (getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) Files.walkFileTree(targetFolder, new MyFileVisitor());
-                        else System.out.println("Not in the present clone");
+                        if (hashCodes.size() == 0) takeHashCodes();
+                        if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) Files.walkFileTree(targetFolder, new MyFileVisitor());
+                        else System.out.println("Not allowed");
                     }
                     else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
                     break;
 
                 case "clone save":
-                    if (hashCodes.size() == 0) takeHashCodes();
                     if (folderBase.exists()) {
-                        if (getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
+                        if (hashCodes.size() == 0) takeHashCodes();
+                        if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
                             save(targetFolder);
                             contents = new ArrayList<>();
                         } else System.out.println("Not in the present clone");
