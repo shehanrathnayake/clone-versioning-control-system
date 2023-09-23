@@ -4,6 +4,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Timestamp;
+import java.sql.Time;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -52,7 +57,10 @@ public class Clone {
                 case "clone make":
                     if (folderBase.exists()) {
                         if (hashCodes.size() == 0) takeHashCodes();
-                        if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) Files.walkFileTree(targetFolder, new MyFileVisitor());
+                        if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
+                            addToUniqueFile();
+                            Files.walkFileTree(targetFolder, new MyFileVisitor());
+                        }
                         else System.out.println("Not allowed");
                     }
                     else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
@@ -287,5 +295,21 @@ public class Clone {
             }
         }
         file.delete();
+    }
+
+    private static void addToUniqueFile() throws IOException {
+        Instant instant = Instant.now();
+        LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        String timeStamp = dateTime.toString();
+        File uniqueFile = new File(mainRepoPath + "uniqueclone.txt");
+        FileOutputStream fos = new FileOutputStream(uniqueFile);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        try{
+            bos.write(timeStamp.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            bos.close();
+        }
     }
 }
