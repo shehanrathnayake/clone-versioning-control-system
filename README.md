@@ -1,7 +1,7 @@
 # Clone Version Control System
 
 ### Version
-0.5.1
+0.6.0
 
 ### License
 Copyright &copy; 2023 Shehan Rathnayake. All Rights Reserved.<br>
@@ -32,4 +32,5 @@ After initializing the repository, you can use various other commands for differ
 ```clone make``` => Getting ready all the files for saving<br>
 ```clone save``` => Saving a snapshot of the current project<br>
 ```clone log``` => Displaying all the clones saved<br>
+```clone activate hashcode``` => Traversing history through saved clones<br>
 
