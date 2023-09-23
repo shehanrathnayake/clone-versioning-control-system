@@ -14,7 +14,7 @@ public class Clone {
     public static String mainRepoPath;
     public static ArrayList<FileDetails> contents = new ArrayList<>();
     public static ArrayList<String> hashCodes = new ArrayList<>();
-    public static boolean isDistroy = false;
+    public static boolean isDestroy = false;
     public static final String YELLOW_COLOR = "\033[33;1m";
     public static final String RED_COLOR = "\033[31;1m";
     public static final String BLUE_COLOR = "\033[34;1m";
@@ -272,9 +272,9 @@ public class Clone {
     }
 
     private static void destroyPresent() throws IOException {
-        isDistroy = true;
+        isDestroy = true;
         Path targetFolder = Paths.get(targetFolderPath);
         Files.walkFileTree(targetFolder, new MyFileVisitor());
-        isDistroy = false;
+        isDestroy = false;
     }
 }

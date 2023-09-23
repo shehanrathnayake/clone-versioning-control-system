@@ -17,7 +17,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         Matcher matcher = pattern.matcher(path);
 
         if (!matcher.find()) {
-            if (Clone.isDistroy) {
+            if (Clone.isDestroy) {
                 Files.delete(file);
             } else {
                 byte[] buffer = getBytes(file);
