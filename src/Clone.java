@@ -6,6 +6,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Clone {
     public static String targetFolderPath;
@@ -14,15 +16,17 @@ public class Clone {
     public static ArrayList<String> hashCodes = new ArrayList<>();
     public static final String YELLOW_COLOR = "\033[33;1m";
     public static final String RED_COLOR = "\033[31;1m";
+    public static final String BLUE_COLOR = "\033[34;1m";
     public static final String RESET = "\033[0m";
     public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 
-        if (args.length == 0) {
-            targetFolderPath = "";
-        } else {
-            targetFolderPath = args[0];
-        }
+//        if (args.length == 0) {
+//            targetFolderPath = "";
+//        } else {
+//            targetFolderPath = args[0];
+//        }
+        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
         mainRepoPath = targetFolderPath + ".clone/";
         File folderBase = new File(mainRepoPath);
         if (folderBase.exists()) {
@@ -31,7 +35,7 @@ public class Clone {
         }
 
         while(true) {
-            System.out.print("\nStart a repository => " + RED_COLOR + "clone start" + RESET + "\nMake files => " + RED_COLOR + "clone make" + RESET +"\nSave Clone => " + RED_COLOR + "clone save" + RESET + "\nClone log => " + RED_COLOR + "clone log" + RESET + "\n\nEnter the command: ");
+            System.out.print("\nStart a repository => " + RED_COLOR + "clone start" + RESET + "\nMake files => " + RED_COLOR + "clone make" + RESET +"\nSave Clone => " + RED_COLOR + "clone save" + RESET + "\nClone log => " + RED_COLOR + "clone log" + RESET + "\nActivate a clone => " + RED_COLOR + "clone activate " + BLUE_COLOR + "hashcode" + RESET + "\n\nEnter the command: ");
             String command = scanner.nextLine();
             Path targetFolder = Paths.get(targetFolderPath);
 
@@ -67,7 +71,10 @@ public class Clone {
                     break;
 
                 default:
-                    System.out.println("Not a command");
+                    Pattern pattern = Pattern.compile("^clone activate [A-Z0-9]{7}$");
+                    Matcher matcher = pattern.matcher(command);
+                    if (matcher.find()) selectClone(command.substring(command.length()-7));
+                    else System.out.println("Not a command");
             }
         }
     }
@@ -169,6 +176,53 @@ public class Clone {
             if (i == hashCodes.size() -1) System.out.print(" " + RED_COLOR + "(HEAD -> main)" + RESET);
 
             System.out.println();
+        }
+    }
+
+                        /* Activating clone */
+    private static void selectClone(String hashCode) throws IOException {
+        if (hashCodes.size() == 0) takeHashCodes();
+        System.out.println("Entered to method");
+        System.out.println(hashCode);
+        for (String code : hashCodes) {
+            System.out.println(code.substring(0,7));
+            if (hashCode.equals(code.substring(0,7))) {
+//                System.out.println(hashCode);
+//                System.out.println(code.substring(0,7));
+                activateClone(code);
+                return;
+            }
+        }
+        System.out.println("Wrong code");
+    }
+
+    private static void activateClone(String hashCode) throws IOException {
+        File dbFile = new File(mainRepoPath + "clones/" + hashCode + ".db");
+        FileInputStream fis = new FileInputStream(dbFile);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        try {
+            SaveNode cloneObject = (SaveNode) ois.readObject();
+            extractClone(cloneObject);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            ois.close();
+        }
+    }
+
+    private static void extractClone(SaveNode clone) throws IOException {
+        for (FileDetails files : clone.getContents()) {
+            File cloneFile = new File(files.getPath());
+            FileOutputStream fos = new FileOutputStream(cloneFile);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            try {
+                bos.write(files.getBuffer());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                bos.close();
+            }
         }
     }
 }
