@@ -6,23 +6,28 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Clone {
     public static String targetFolderPath;
     public static String mainRepoPath;
     public static ArrayList<FileDetails> contents = new ArrayList<>();
     public static ArrayList<String> hashCodes = new ArrayList<>();
+    public static boolean isDistroy = false;
     public static final String YELLOW_COLOR = "\033[33;1m";
     public static final String RED_COLOR = "\033[31;1m";
+    public static final String BLUE_COLOR = "\033[34;1m";
     public static final String RESET = "\033[0m";
     public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 
-        if (args.length == 0) {
-            targetFolderPath = "";
-        } else {
-            targetFolderPath = args[0];
-        }
+//        if (args.length == 0) {
+//            targetFolderPath = "";
+//        } else {
+//            targetFolderPath = args[0];
+//        }
+        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
         mainRepoPath = targetFolderPath + ".clone/";
         File folderBase = new File(mainRepoPath);
         if (folderBase.exists()) {
@@ -31,7 +36,7 @@ public class Clone {
         }
 
         while(true) {
-            System.out.print("\nStart a repository => " + RED_COLOR + "clone start" + RESET + "\nMake files => " + RED_COLOR + "clone make" + RESET +"\nSave Clone => " + RED_COLOR + "clone save" + RESET + "\nClone log => " + RED_COLOR + "clone log" + RESET + "\n\nEnter the command: ");
+            System.out.print("\nStart a repository => " + RED_COLOR + "clone start" + RESET + "\nMake files => " + RED_COLOR + "clone make" + RESET +"\nSave Clone => " + RED_COLOR + "clone save" + RESET + "\nClone log => " + RED_COLOR + "clone log" + RESET + "\nActivate a clone => " + RED_COLOR + "clone activate " + YELLOW_COLOR + "hashcode" + RESET + "\n\nEnter the command: ");
             String command = scanner.nextLine();
             Path targetFolder = Paths.get(targetFolderPath);
 
@@ -46,14 +51,21 @@ public class Clone {
                     break;
 
                 case "clone make":
-                    if (folderBase.exists()) Files.walkFileTree(targetFolder, new MyFileVisitor());
+                    if (hashCodes.size() == 0) takeHashCodes();
+                    if (folderBase.exists()) {
+                        if (getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) Files.walkFileTree(targetFolder, new MyFileVisitor());
+                        else System.out.println("Not in the present clone");
+                    }
                     else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
                     break;
 
                 case "clone save":
+                    if (hashCodes.size() == 0) takeHashCodes();
                     if (folderBase.exists()) {
-                        save(targetFolder);
-                        contents = new ArrayList<>();
+                        if (getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
+                            save(targetFolder);
+                            contents = new ArrayList<>();
+                        } else System.out.println("Not in the present clone");
                     }
                     else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
                     break;
@@ -67,7 +79,13 @@ public class Clone {
                     break;
 
                 default:
-                    System.out.println("Not a command");
+                    if (folderBase.exists()) {
+                        Pattern pattern = Pattern.compile("^clone activate [A-Z0-9]{7}$");
+                        Matcher matcher = pattern.matcher(command);
+                        if (matcher.find()) selectClone(command.substring(command.length()-7));
+                        else System.out.println("Not a command");
+
+                    } else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
             }
         }
     }
@@ -79,9 +97,11 @@ public class Clone {
             fileRef.mkdir();
         }
 
-        File fileHash = new File(ignoreFilePath + "clone-hash/clonehash.txt");
-        fileHash.createNewFile();
-
+        String[] repoFiles = {"clone-hash/clonehash.txt", "clone-hash/headhash.txt"};
+        for (String repoFile : repoFiles) {
+            File fileHash = new File(ignoreFilePath + repoFile);
+            fileHash.createNewFile();
+        }
     }
 
     private static void save(Path targetFolder) throws IOException, NoSuchAlgorithmException {
@@ -104,6 +124,7 @@ public class Clone {
             if (successfull) {
                 hashCodes.add(hashCode);
                 logHashCodes();
+                setHeadClone(hashCode);
             }
         }
     }
@@ -127,7 +148,6 @@ public class Clone {
             String hex = String.format("%02X", b);
             hexStringCode.append(hex);
         }
-
         return hexStringCode.toString();
     }
 
@@ -154,7 +174,6 @@ public class Clone {
         FileOutputStream fos = new FileOutputStream(pathToHashCodes.toAbsolutePath().toString());
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         ObjectOutputStream oos = new ObjectOutputStream(bos);
-
         try {
             oos.writeObject(hashCodes);
         } finally {
@@ -162,13 +181,100 @@ public class Clone {
         }
     }
 
-    private static void showClones() {
+    private static void setHeadClone(String headCloneCode) throws IOException {
+        Path pathToHeadCloneCode = Paths.get(targetFolderPath + ".clone/clone-hash/headhash.txt");
+        FileOutputStream fos = new FileOutputStream(pathToHeadCloneCode.toAbsolutePath().toString());
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        try {
+            bos.write(headCloneCode.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            bos.close();
+        }
+    }
+
+    private static String getHeadClone() throws IOException {
+        String headHashCode = "";
+        Path pathToHeadCloneCode = Paths.get(targetFolderPath + ".clone/clone-hash/headhash.txt");
+        FileInputStream fis = new FileInputStream(pathToHeadCloneCode.toAbsolutePath().toString());
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        try {
+            byte[] buffer = bis.readAllBytes();
+            headHashCode = new String(buffer);
+        } finally {
+            bis.close();
+        }
+        return headHashCode;
+    }
+
+    private static void showClones() throws IOException {
         System.out.println();
+        String headHashCode = getHeadClone();
+        boolean done = false;
         for (int i = hashCodes.size() -1; i >= 0; i--) {
             System.out.print(YELLOW_COLOR + hashCodes.get(i).substring(0,7) + RESET);
-            if (i == hashCodes.size() -1) System.out.print(" " + RED_COLOR + "(HEAD -> main)" + RESET);
-
+            if (i == hashCodes.size() -1 && hashCodes.get(i).equals(headHashCode)) {
+                System.out.print(" " + RED_COLOR + "(HEAD -> main)" + RESET);
+                done = true;
+            }
+            else if (!done) {
+                if (i == hashCodes.size() -1 && !hashCodes.get(i).equals(headHashCode)) System.out.print(" " + RED_COLOR + "(main)" + RESET);
+                else if (hashCodes.get(i).equals(headHashCode)) System.out.print(" " + RED_COLOR + "(HEAD)" + RESET);
+            }
             System.out.println();
         }
+    }
+
+                        /* Activating clone */
+    private static void selectClone(String hashCode) throws IOException {
+        if (hashCodes.size() == 0) takeHashCodes();
+        for (String code : hashCodes) {
+            if (hashCode.equals(code.substring(0,7))) {
+                destroyPresent();
+                activateClone(code);
+                return;
+            }
+        }
+        System.out.println("Wrong code");
+    }
+
+    private static void activateClone(String hashCode) throws IOException {
+        File dbFile = new File(mainRepoPath + "clones/" + hashCode + ".db");
+        FileInputStream fis = new FileInputStream(dbFile);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        try {
+            SaveNode cloneObject = (SaveNode) ois.readObject();
+            extractClone(cloneObject);
+            setHeadClone(hashCode);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            ois.close();
+        }
+    }
+
+    private static void extractClone(SaveNode clone) throws IOException {
+        for (FileDetails files : clone.getContents()) {
+//            if (files.getPath().substring(files.getPath().length()-files.)
+            File cloneFile = new File(files.getPath());
+            FileOutputStream fos = new FileOutputStream(cloneFile);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            try {
+                bos.write(files.getBuffer());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                bos.close();
+            }
+        }
+    }
+
+    private static void destroyPresent() throws IOException {
+        isDistroy = true;
+        Path targetFolder = Paths.get(targetFolderPath);
+        Files.walkFileTree(targetFolder, new MyFileVisitor());
+        isDistroy = false;
     }
 }
