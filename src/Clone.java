@@ -21,12 +21,12 @@ public class Clone {
     public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 
-//        if (args.length == 0) {
-//            targetFolderPath = "";
-//        } else {
-//            targetFolderPath = args[0];
-//        }
-        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
+        if (args.length == 0) {
+            targetFolderPath = "";
+        } else {
+            targetFolderPath = args[0];
+        }
+//        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
         mainRepoPath = targetFolderPath + ".clone/";
         File folderBase = new File(mainRepoPath);
         if (folderBase.exists()) {
@@ -95,7 +95,7 @@ public class Clone {
             fileRef.mkdir();
         }
 
-        String[] repoFiles = {"clone-hash/clonehash.txt", "clone-hash/headhash.txt"};
+        String[] repoFiles = {"clone-hash/clonehash.txt", "clone-hash/headhash.txt", "uniqueclone.txt"};
         for (String repoFile : repoFiles) {
             File fileHash = new File(Clone.mainRepoPath + repoFile);
             fileHash.createNewFile();
