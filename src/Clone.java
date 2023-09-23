@@ -22,12 +22,12 @@ public class Clone {
     public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 
-        if (args.length == 0) {
-            targetFolderPath = "";
-        } else {
-            targetFolderPath = args[0];
-        }
-//        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
+//        if (args.length == 0) {
+//            targetFolderPath = "";
+//        } else {
+//            targetFolderPath = args[0];
+//        }
+        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
         mainRepoPath = targetFolderPath + ".clone/";
         File folderBase = new File(mainRepoPath);
         if (folderBase.exists()) {
@@ -231,7 +231,7 @@ public class Clone {
         if (hashCodes.size() == 0) takeHashCodes();
         for (String code : hashCodes) {
             if (hashCode.equals(code.substring(0,7))) {
-                destroyPresent();
+                destroyPresent(new File(targetFolderPath));
                 activateClone(code);
                 return;
             }
@@ -257,7 +257,15 @@ public class Clone {
 
     private static void extractClone(SaveNode clone) throws IOException {
         for (FileDetails files : clone.getContents()) {
-//            if (files.getPath().substring(files.getPath().length()-files.)
+
+            String fileName = "/[.]?[A-Za-z0-9_[-] ]+[.][A-Za-z]+$";
+            Pattern pattern = Pattern.compile(fileName);
+            Matcher matcher = pattern.matcher(files.getPath());
+            matcher.find();
+            String directoryPath = files.getPath().substring(0, matcher.start());
+            File directory = new File(directoryPath);
+            if (!directory.exists()) directory.mkdir();
+
             File cloneFile = new File(files.getPath());
             FileOutputStream fos = new FileOutputStream(cloneFile);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -271,10 +279,15 @@ public class Clone {
         }
     }
 
-    private static void destroyPresent() throws IOException {
-        isDestroy = true;
-        Path targetFolder = Paths.get(targetFolderPath);
-        Files.walkFileTree(targetFolder, new MyFileVisitor());
-        isDestroy = false;
+    private static void destroyPresent(File file) throws IOException {
+        if (file.isDirectory()) {
+            File[] fileList = file.listFiles();
+            for (File contentFile : fileList) {
+                if (!contentFile.getName().equals(".clone")) {
+                    destroyPresent(contentFile);
+                }
+            }
+        }
+        file.delete();
     }
 }
