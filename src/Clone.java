@@ -26,12 +26,12 @@ public class Clone {
     public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 
-//        if (args.length == 0) {
-//            targetFolderPath = "";
-//        } else {
-//            targetFolderPath = args[0];
-//        }
-        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
+        if (args.length == 0) {
+            targetFolderPath = "";
+        } else {
+            targetFolderPath = args[0];
+        }
+//        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
         mainRepoPath = targetFolderPath + ".clone/";
         File folderBase = new File(mainRepoPath);
         if (folderBase.exists()) {
