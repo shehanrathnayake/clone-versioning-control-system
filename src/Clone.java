@@ -14,7 +14,6 @@ public class Clone {
     public static String mainRepoPath;
     public static ArrayList<FileDetails> contents = new ArrayList<>();
     public static ArrayList<String> hashCodes = new ArrayList<>();
-    public static boolean isDestroy = false;
     public static final String YELLOW_COLOR = "\033[33;1m";
     public static final String RED_COLOR = "\033[31;1m";
     public static final String BLUE_COLOR = "\033[34;1m";
@@ -22,12 +21,12 @@ public class Clone {
     public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 
-//        if (args.length == 0) {
-//            targetFolderPath = "";
-//        } else {
-//            targetFolderPath = args[0];
-//        }
-        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
+        if (args.length == 0) {
+            targetFolderPath = "";
+        } else {
+            targetFolderPath = args[0];
+        }
+//        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
         mainRepoPath = targetFolderPath + ".clone/";
         File folderBase = new File(mainRepoPath);
         if (folderBase.exists()) {
