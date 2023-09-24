@@ -9,17 +9,17 @@ This project is licensed under [MIT License](License.txt).
 
 ## Clone Installation Guide
 
-The installation files are available for Ubuntu users in ```.deb``` file and ```.tar.gz``` in the directory of [clone-0.7.0-ubuntu-package](clone-0.7.0-ubuntu-package/) in this repository.
+The installation files are available for Ubuntu users in ```.deb``` file and ```.tar.gz``` in the directory of [clone-0.7.1-ubuntu-package](clone-0.7.1-ubuntu-package/) in this repository.
 
 ### ```.deb``` File Installation
-Use ```sudo dpkg -i clone-0.7.0-ubuntu.deb``` to install.
+Use ```sudo dpkg -i clone-0.7.1-ubuntu.deb``` to install.
 
 
 ### ```.tar.gz``` File Installation
 This ```.tar.gz``` file includes ```clone-vcs``` directory and ```clone``` file. Simply place ```clone-vcs``` in the ```/opt``` directory and ```clone``` file in the ```/usr/bin``` directory.
 
 
-See the README.md inside the [clone-0.7.0-ubuntu-package](clone-0.7.0-ubuntu-package/) directory also.
+See the README.md inside the [clone-0.7.1-ubuntu-package](clone-0.7.1-ubuntu-package/) directory also.
 
 ## Clone User Guide
 
