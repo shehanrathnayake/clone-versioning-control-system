@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="clone-version-control-system:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/clone_version_control_system_jar</output-path>
+    <root id="archive" name="clone-version-control-system.jar">
+      <element id="module-output" name="clone-version-control-system" />
+    </root>
+  </artifact>
+</component>
