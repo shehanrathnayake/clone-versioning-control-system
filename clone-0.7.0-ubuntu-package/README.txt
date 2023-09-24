@@ -5,7 +5,7 @@ The installation files are available for Ubuntu users as .deb file and .tar.gz
 
 .deb File Installation
 
-Use <sudo dpkg -i clone-0.7.0-ubuntu.deb> to install.
+sudo dpkg -i clone-0.7.0-ubuntu.deb to install.
 
 
 .tar.gz File Installation
@@ -23,7 +23,7 @@ Initializing a Clone Repository
 
 To initialize a Clone repository in the specified target directory, run the following command:
 
-<clone start>
+< clone start >
 
 Run this command only once to create the repository in the target directory.
 
@@ -31,7 +31,7 @@ Using Other Commands
 
 After initializing the repository, you can use various other commands for different functionalities as needed in your development workflow.
 
-<clone make> - Getting ready all the files for saving<br>
-<clone save> - Saving a snapshot of the current project<br>
-<clone log> - Displaying all the clones saved<br>
-<clone activate <hashcode>> - Traversing history through saved clones<br>
+clone make - Getting ready all the files for saving
+clone save - Saving a snapshot of the current project
+clone log - Displaying all the clones saved
+clone activate hashcode - Traversing history through saved clones
