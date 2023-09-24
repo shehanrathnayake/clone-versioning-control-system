@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,82 +21,152 @@ public class Clone {
     public static ArrayList<String> hashCodes = new ArrayList<>();
     public static final String YELLOW_COLOR = "\033[33;1m";
     public static final String RED_COLOR = "\033[31;1m";
-    public static final String BLUE_COLOR = "\033[34;1m";
+//    public static final String BLUE_COLOR = "\033[34;1m";
     public static final String RESET = "\033[0m";
-    public static Scanner scanner = new Scanner(System.in);
+//    public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 
-        if (args.length == 0) {
-            targetFolderPath = "";
-        } else {
-            targetFolderPath = args[0];
-        }
+//        if (args.length == 0) {
+//            targetFolderPath = "";
+//        } else {
+//            targetFolderPath = args[0];
+//        }
 //        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
-        mainRepoPath = targetFolderPath + ".clone/";
+
+        targetFolderPath = args[0];
+        System.out.println(targetFolderPath);
+        mainRepoPath = targetFolderPath + "/.clone/";
         File folderBase = new File(mainRepoPath);
+        String command = args[1];
+
         if (folderBase.exists()) {
             takeHashCodes();
+        }
+        Path targetFolder = Paths.get(targetFolderPath);
 
+        switch (command) {
+            case "start":
+                if (!folderBase.exists()) {
+                    start();
+                    takeHashCodes();
+                    System.out.println("New repository is created...");
+
+                }else System.out.println("Already a repository");
+                break;
+
+            case "make":
+                System.out.println(args[1]);
+                if (folderBase.exists()) {
+                    if (hashCodes.size() == 0) takeHashCodes();
+                    if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
+                        System.out.println("About to addToUnique");
+                        addToUniqueFile();
+                        Files.walkFileTree(targetFolder, new MyFileVisitor());
+                    }
+                    else System.out.println("Not allowed");
+                }
+                else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
+                break;
+
+            case "save":
+                if (folderBase.exists()) {
+                    if (hashCodes.size() == 0) takeHashCodes();
+                    if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
+                        System.out.println("contents: "+ contents.size());
+                        save();
+                        contents = new ArrayList<>();
+                    } else System.out.println("Not in the present clone");
+                }
+                else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
+                break;
+
+            case "log":
+                if (folderBase.exists()) {
+                    if (hashCodes.size() == 0) takeHashCodes();
+                    showClones();
+                }
+                else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
+                break;
+
+            case "activate":
+                if (folderBase.exists()) {
+                    if (args.length == 3) {
+                        System.out.println("selected hashcode: " + args[2]);
+                        selectClone(args[2]);
+                    } else System.out.println("Clone hashcode should be provided...");
+
+                } else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
+                break;
+
+            default:
+//                if (folderBase.exists()) {
+//                    Pattern pattern = Pattern.compile("^clone activate [A-Z0-9]{7}$");
+//                    Matcher matcher = pattern.matcher(command);
+//                    if (matcher.find()) selectClone(command.substring(command.length()-7));
+//                    else System.out.println("Not a command");
+//
+//                } else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
+                System.out.println("Wrong command");
         }
 
-        while(true) {
-            System.out.print("\nStart a repository => " + RED_COLOR + "clone start" + RESET + "\nMake files => " + RED_COLOR + "clone make" + RESET +"\nSave app.Clone => " + RED_COLOR + "clone save" + RESET + "\napp.Clone log => " + RED_COLOR + "clone log" + RESET + "\nActivate a clone => " + RED_COLOR + "clone activate " + YELLOW_COLOR + "hashcode" + RESET + "\n\nEnter the command: ");
-            String command = scanner.nextLine();
-            Path targetFolder = Paths.get(targetFolderPath);
-
-            switch (command) {
-                case "clone start":
-                    if (!folderBase.exists()) {
-                        start(targetFolder);
-                        takeHashCodes();
-                        System.out.println("New repository is created...");
-
-                    }else System.out.println("Already a repository");
-                    break;
-
-                case "clone make":
-                    if (folderBase.exists()) {
-                        if (hashCodes.size() == 0) takeHashCodes();
-                        if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
-                            addToUniqueFile();
-                            Files.walkFileTree(targetFolder, new MyFileVisitor());
-                        }
-                        else System.out.println("Not allowed");
-                    }
-                    else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
-                    break;
-
-                case "clone save":
-                    if (folderBase.exists()) {
-                        if (hashCodes.size() == 0) takeHashCodes();
-                        if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
-                            save(targetFolder);
-                            contents = new ArrayList<>();
-                        } else System.out.println("Not in the present clone");
-                    }
-                    else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
-                    break;
-
-                case "clone log":
-                    if (folderBase.exists()) {
-                        if (hashCodes.size() == 0) takeHashCodes();
-                        showClones();
-                    }
-                    else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
-                    break;
-
-                default:
-                    if (folderBase.exists()) {
-                        Pattern pattern = Pattern.compile("^clone activate [A-Z0-9]{7}$");
-                        Matcher matcher = pattern.matcher(command);
-                        if (matcher.find()) selectClone(command.substring(command.length()-7));
-                        else System.out.println("Not a command");
-
-                    } else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
-            }
-        }
+//        while(true) {
+//            System.out.print("\nStart a repository => " + RED_COLOR + "clone start" + RESET + "\nMake files => " + RED_COLOR + "clone make" + RESET +"\nSave app.Clone => " + RED_COLOR + "clone save" + RESET + "\napp.Clone log => " + RED_COLOR + "clone log" + RESET + "\nActivate a clone => " + RED_COLOR + "clone activate " + YELLOW_COLOR + "hashcode" + RESET + "\n\nEnter the command: ");
+//            String command = scanner.nextLine();
+//            Path targetFolder = Paths.get(targetFolderPath);
+//
+//            switch (command) {
+//                case "clone start":
+//                    if (!folderBase.exists()) {
+//                        start(targetFolder);
+//                        takeHashCodes();
+//                        System.out.println("New repository is created...");
+//
+//                    }else System.out.println("Already a repository");
+//                    break;
+//
+//                case "clone make":
+//                    if (folderBase.exists()) {
+//                        if (hashCodes.size() == 0) takeHashCodes();
+//                        if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
+//                            addToUniqueFile();
+//                            Files.walkFileTree(targetFolder, new MyFileVisitor());
+//                        }
+//                        else System.out.println("Not allowed");
+//                    }
+//                    else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
+//                    break;
+//
+//                case "clone save":
+//                    if (folderBase.exists()) {
+//                        if (hashCodes.size() == 0) takeHashCodes();
+//                        if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
+//                            save(targetFolder);
+//                            contents = new ArrayList<>();
+//                        } else System.out.println("Not in the present clone");
+//                    }
+//                    else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
+//                    break;
+//
+//                case "clone log":
+//                    if (folderBase.exists()) {
+//                        if (hashCodes.size() == 0) takeHashCodes();
+//                        showClones();
+//                    }
+//                    else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
+//                    break;
+//
+//                default:
+//                    if (folderBase.exists()) {
+//                        Pattern pattern = Pattern.compile("^clone activate [A-Z0-9]{7}$");
+//                        Matcher matcher = pattern.matcher(command);
+//                        if (matcher.find()) selectClone(command.substring(command.length()-7));
+//                        else System.out.println("Not a command");
+//
+//                    } else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
+//            }
+//        }
     }
-    private static void start(Path targetFolder) throws IOException {
+    private static void start() throws IOException {
         String[] ignorePaths = {"", "clones", "clone-hash", ".ignoreclone"};
         for (String ignorePath : ignorePaths) {
             File fileRef = new File(mainRepoPath + ignorePath);
@@ -105,17 +175,17 @@ public class Clone {
 
         String[] repoFiles = {"clone-hash/clonehash.txt", "clone-hash/headhash.txt", "uniqueclone.txt"};
         for (String repoFile : repoFiles) {
-            File fileHash = new File(Clone.mainRepoPath + repoFile);
+            File fileHash = new File(mainRepoPath + repoFile);
             fileHash.createNewFile();
         }
     }
 
-    private static void save(Path targetFolder) throws IOException, NoSuchAlgorithmException {
+    private static void save() throws IOException, NoSuchAlgorithmException {
         boolean successfull = true;
         String hashCode = generateHashCode();
         SaveNode newSaveNode = new SaveNode(hashCode, contents);
 
-        File file = new File(targetFolder.toAbsolutePath().toString()+"/.clone/clones/" + hashCode + ".db");
+        File file = new File(mainRepoPath + "clones/" + hashCode + ".db");
         file.createNewFile();
         FileOutputStream fos = new FileOutputStream(file);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -154,6 +224,7 @@ public class Clone {
             String hex = String.format("%02X", b);
             hexStringCode.append(hex);
         }
+        System.out.println("new Hashcode:" + hexStringCode.toString());
         return hexStringCode.toString();
     }
 
@@ -290,6 +361,7 @@ public class Clone {
             File[] fileList = file.listFiles();
             for (File contentFile : fileList) {
                 if (!contentFile.getName().equals(".clone")) {
+                    System.out.println("destroy file:" + contentFile.toPath().toAbsolutePath().toString());
                     destroyPresent(contentFile);
                 }
             }
@@ -302,6 +374,7 @@ public class Clone {
         LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
         String timeStamp = dateTime.toString();
         File uniqueFile = new File(mainRepoPath + "uniqueclone.txt");
+        System.out.println("unique file: " + uniqueFile.toPath().toAbsolutePath().toString());
         FileOutputStream fos = new FileOutputStream(uniqueFile);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         try{

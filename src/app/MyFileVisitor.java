@@ -18,6 +18,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         Matcher matcher = pattern.matcher(path);
 
         if (file.toAbsolutePath().toString().equals(Clone.mainRepoPath + "uniqueclone.txt") || !matcher.find()) {
+            System.out.println(path);
             byte[] buffer = getBytes(file);
             FileDetails fileDetails = new FileDetails(path, buffer);
             Clone.contents.add(fileDetails);
