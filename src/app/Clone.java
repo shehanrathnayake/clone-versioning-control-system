@@ -60,8 +60,7 @@ public class Clone {
                     if (hashCodes.size() == 0) takeHashCodes();
                     if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
                         System.out.println("About to addToUnique");
-                        addToUniqueFile();
-                        Files.walkFileTree(targetFolder, new MyFileVisitor());
+                        make(targetFolder);
                     }
                     else System.out.println("Not allowed");
                 }
@@ -167,21 +166,45 @@ public class Clone {
 //        }
     }
     private static void start() throws IOException {
-        String[] ignorePaths = {"", "clones", "clone-hash", ".ignoreclone"};
+        String[] ignorePaths = {"", "clones", "temp-clone", "clone-hash", ".ignoreclone"};
         for (String ignorePath : ignorePaths) {
             File fileRef = new File(mainRepoPath + ignorePath);
             fileRef.mkdir();
         }
 
-        String[] repoFiles = {"clone-hash/clonehash.txt", "clone-hash/headhash.txt", "uniqueclone.txt"};
+        String[] repoFiles = {"clone-hash/clonehash.txt", "clone-hash/headhash.txt", "uniqueclone.txt", "temp-clone/tempclone.txt"};
         for (String repoFile : repoFiles) {
             File fileHash = new File(mainRepoPath + repoFile);
             fileHash.createNewFile();
         }
     }
 
+    private static void make(Path targetFolder) throws IOException {
+        addToUniqueFile();
+        Files.walkFileTree(targetFolder, new MyFileVisitor());
+        createContentFile();
+    }
+
+    private static void createContentFile() throws IOException {
+        File tempFile = new File(mainRepoPath + "temp-clone/tempclone.txt");
+        FileOutputStream fos = new FileOutputStream(tempFile);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+        try {
+            oos.writeObject(contents);
+        } finally {
+            oos.close();
+        }
+    }
+
     private static void save() throws IOException, NoSuchAlgorithmException {
         boolean successfull = true;
+        getMadeContents();
+        if (contents.size() == 0) {
+            System.out.println("Need to make a clone before save. use " + RED_COLOR + "clone make" + RESET);
+            return;
+        }
         String hashCode = generateHashCode();
         SaveNode newSaveNode = new SaveNode(hashCode, contents);
 
@@ -198,10 +221,26 @@ public class Clone {
         } finally {
             oos.close();
             if (successfull) {
+                takeHashCodes();
                 hashCodes.add(hashCode);
                 logHashCodes();
                 setHeadClone(hashCode);
             }
+        }
+    }
+
+    private static void getMadeContents() throws IOException {
+        File tempFile = new File(mainRepoPath + "temp-clone/tempclone.txt");
+        FileInputStream fis = new FileInputStream(tempFile);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+
+        try {
+            contents = (ArrayList<FileDetails>) ois.readObject();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            ois.close();
         }
     }
 
