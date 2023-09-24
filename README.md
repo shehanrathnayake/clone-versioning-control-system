@@ -1,16 +1,28 @@
-# app.Clone Version Control System
+# Clone Version Control System
 
 ### Version
-0.6.3
+0.7.0
 
 ### License
 Copyright &copy; 2023 Shehan Rathnayake. All Rights Reserved.<br>
 This project is licensed under [MIT License](License.txt).
 
-## app.Clone User Guide
+## Clone Installation Guide
+
+The installation files are available for Ubuntu users in ```.deb``` file and ```.tar.gz``` in the directory of [clone-0.7.0-ubuntu-package](clone-0.7.0-ubuntu-package/) in this repository.
+
+### ```.deb``` file installation
+Use ```sudo dpkg -i clone-0.7.0-ubuntu.deb``` to install.
+
+### ```.tar.gz``` file installation
+This ```.tar``` file includes ```clone-vcs``` directory and ```clone``` file. Simply place ```clone-vcs``` in the ```/opt``` directory and ```clone``` file in the ```/usr/bin``` directory.
+
+See the README.md inside [clone-0.7.0-ubuntu-package](clone-0.7.0-ubuntu-package/) also.
+
+## Clone User Guide
 
 ### Introduction
-app.Clone is a version control software designed to manage your projects efficiently. This guide provides instructions on how to use app.Clone to manage your code repositories effectively.
+Clone is a version control software designed to manage your projects efficiently. This guide provides instructions on how to use app.Clone to manage your code repositories effectively.
 
 ### Running app.Clone
 To run the app.Clone software, use the following command in your terminal:
