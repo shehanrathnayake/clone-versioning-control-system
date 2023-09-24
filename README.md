@@ -1,4 +1,4 @@
-# Clone Version Control System
+# app.Clone Version Control System
 
 ### Version
 0.6.3
@@ -7,20 +7,20 @@
 Copyright &copy; 2023 Shehan Rathnayake. All Rights Reserved.<br>
 This project is licensed under [MIT License](License.txt).
 
-## Clone User Guide
+## app.Clone User Guide
 
 ### Introduction
-Clone is a version control software designed to manage your projects efficiently. This guide provides instructions on how to use Clone to manage your code repositories effectively.
+app.Clone is a version control software designed to manage your projects efficiently. This guide provides instructions on how to use app.Clone to manage your code repositories effectively.
 
-### Running Clone
-To run the Clone software, use the following command in your terminal:
+### Running app.Clone
+To run the app.Clone software, use the following command in your terminal:
 
-```java Clone "path/to/directory"```
+```java app.Clone "path/to/directory"```
 
 Replace "path/to/directory" with the actual path to your desired target directory.
 
-### Initializing a Clone Repository
-To initialize a Clone repository in the specified target directory, run the following command:
+### Initializing a app.Clone Repository
+To initialize a app.Clone repository in the specified target directory, run the following command:
 
 ```clone start```
 

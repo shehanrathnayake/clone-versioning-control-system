@@ -29,3 +29,4 @@ bin/
 .DS_Store
 
 .clone
+src/META-INF/
