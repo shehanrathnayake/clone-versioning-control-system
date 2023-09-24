@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,16 +20,18 @@ public class Clone {
     public static ArrayList<String> hashCodes = new ArrayList<>();
     public static final String YELLOW_COLOR = "\033[33;1m";
     public static final String RED_COLOR = "\033[31;1m";
-//    public static final String BLUE_COLOR = "\033[34;1m";
     public static final String RESET = "\033[0m";
-//    public static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
 
         targetFolderPath = args[0];
-        System.out.println(targetFolderPath);
         mainRepoPath = targetFolderPath + "/.clone/";
         File folderBase = new File(mainRepoPath);
-        String command = args[1];
+        String command = "";
+        if (args.length > 1) command = args[1];
+        else {
+            System.out.println("Hi, I am there. Use commands to work with me...");
+            return;
+        }
 
         if (folderBase.exists()) {
             takeHashCodes();
@@ -48,14 +49,12 @@ public class Clone {
                 break;
 
             case "make":
-                System.out.println(args[1]);
                 if (folderBase.exists()) {
                     if (hashCodes.size() == 0) takeHashCodes();
                     if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
-                        System.out.println("About to addToUnique");
                         make(targetFolder);
                     }
-                    else System.out.println("Not allowed");
+                    else System.out.println("Cannot make clones while HEAD detached from main");
                 }
                 else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
                 break;
@@ -64,10 +63,9 @@ public class Clone {
                 if (folderBase.exists()) {
                     if (hashCodes.size() == 0) takeHashCodes();
                     if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
-                        System.out.println("contents: "+ contents.size());
                         save();
                         contents = new ArrayList<>();
-                    } else System.out.println("Not in the present clone");
+                    } else System.out.println("Cannot save clones while HEAD detached from main");
                 }
                 else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
                 break;
@@ -83,7 +81,6 @@ public class Clone {
             case "activate":
                 if (folderBase.exists()) {
                     if (args.length == 3) {
-                        System.out.println("selected hashcode: " + args[2]);
                         selectClone(args[2]);
                     } else System.out.println("Clone hashcode should be provided...");
 
@@ -93,6 +90,7 @@ public class Clone {
             default:
                 System.out.println("Wrong command");
         }
+        System.out.println();
 
     }
     private static void start() throws IOException {
@@ -155,6 +153,7 @@ public class Clone {
                 hashCodes.add(hashCode);
                 logHashCodes();
                 setHeadClone(hashCode);
+                System.out.println("Clone " + YELLOW_COLOR + hashCodes.get(hashCodes.size() -1).substring(0,7) + RESET + " has been saved successfully.");
             }
         }
     }
@@ -193,7 +192,6 @@ public class Clone {
             String hex = String.format("%02X", b);
             hexStringCode.append(hex);
         }
-        System.out.println("new Hashcode:" + hexStringCode.toString());
         return hexStringCode.toString();
     }
 
@@ -207,9 +205,9 @@ public class Clone {
             hashCodes = (ArrayList<String>) ois.readObject();
             ois.close();
         } catch (NullPointerException e) {
-            System.out.println("hashcodes empty");
+
         } catch (EOFException e) {
-            System.out.println("hashcodes end of files");
+
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -237,6 +235,9 @@ public class Clone {
             throw new RuntimeException(e);
         } finally {
             bos.close();
+            if (!headCloneCode.equals(hashCodes.get(hashCodes.size() -1))) {
+                System.out.println("HEAD detached from the present. You can see the files, go through the past clones but cannot save changes.");
+            }
         }
     }
 
@@ -329,7 +330,6 @@ public class Clone {
             File[] fileList = file.listFiles();
             for (File contentFile : fileList) {
                 if (!contentFile.getName().equals(".clone")) {
-                    System.out.println("destroy file:" + contentFile.toPath().toAbsolutePath().toString());
                     destroyPresent(contentFile);
                 }
             }
@@ -342,7 +342,7 @@ public class Clone {
         LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
         String timeStamp = dateTime.toString();
         File uniqueFile = new File(mainRepoPath + "uniqueclone.txt");
-        System.out.println("unique file: " + uniqueFile.toPath().toAbsolutePath().toString());
+
         FileOutputStream fos = new FileOutputStream(uniqueFile);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         try{
