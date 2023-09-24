@@ -15,17 +15,17 @@ See the README.md inside [clone-0.7.0-ubuntu-package](clone-0.7.0-ubuntu-package
 ## Clone User Guide
 
 ### Introduction
-Clone is a version control software designed to manage your projects efficiently. This guide provides instructions on how to use app.Clone to manage your code repositories effectively.
+Clone is a version control software designed to manage your projects efficiently. This guide provides instructions on how to use Clone to manage your code repositories effectively.
 
-### Running app.Clone
-To run the app.Clone software, use the following command in your terminal:
+### Running Clone
+To run the Clone software, use the following command in your terminal:
 
-```java app.Clone "path/to/directory"```
+```java Clone "path/to/directory"```
 
 Replace "path/to/directory" with the actual path to your desired target directory.
 
-### Initializing a app.Clone Repository
-To initialize a app.Clone repository in the specified target directory, run the following command:
+### Initializing a Clone Repository
+To initialize a Clone repository in the specified target directory, run the following command:
 
 ```clone start```
 
