@@ -166,6 +166,8 @@ public class Clone {
 
         try {
             contents = (ArrayList<FileDetails>) ois.readObject();
+        } catch (EOFException e) {
+            System.out.println("Need to make a clone before save. use " + RED_COLOR + "clone make" + RESET);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } finally {

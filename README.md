@@ -1,7 +1,7 @@
 # Clone Version Control System
 
 ### Version
-0.7.0
+0.7.1
 
 ### License
 Copyright &copy; 2023 Shehan Rathnayake. All Rights Reserved.<br>
