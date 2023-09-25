@@ -30,3 +30,6 @@ bin/
 
 .clone
 src/META-INF/
+
+**.idea
+**.iml
