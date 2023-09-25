@@ -19,7 +19,7 @@ Use ```sudo dpkg -i clone-0.7.1-ubuntu.deb``` to install.
 This ```.tar.gz``` file includes ```clone-vcs``` directory and ```clone``` file. Simply place ```clone-vcs``` in the ```/opt``` directory and ```clone``` file in the ```/usr/bin``` directory.
 
 
-See the README.md inside the [clone-0.7.1-ubuntu-package](clone-0.7.1-ubuntu-package/) directory also.
+See the README.txt inside the [clone-0.7.1-ubuntu-package](clone-0.7.1-ubuntu-package/) directory also.
 
 ## Clone User Guide
 
