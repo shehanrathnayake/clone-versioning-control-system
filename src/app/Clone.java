@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,11 +23,21 @@ public class Clone {
     public static final String RED_COLOR = "\033[31;1m";
     public static final String RESET = "\033[0m";
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+/*
+        targetFolderPath = "/home/shehan/Documents/dep-11/myfolder/clone-test2/";
+        mainRepoPath = targetFolderPath + ".clone/";
+        File folderBase = new File(mainRepoPath);
+
+*/
+
 
         targetFolderPath = args[0];
+        System.out.println(targetFolderPath);
         mainRepoPath = targetFolderPath + "/.clone/";
+        System.out.println(mainRepoPath);
         File folderBase = new File(mainRepoPath);
         String command = "";
+
         if (args.length > 1) command = args[1];
         else {
             System.out.println("Hi, I am there. Use commands to work with me...");
@@ -42,7 +53,7 @@ public class Clone {
             case "start":
                 if (!folderBase.exists()) {
                     start();
-                    takeHashCodes();
+//                    takeHashCodes();
                     System.out.println("New repository is created...");
 
                 }else System.out.println("Already a repository");
@@ -90,7 +101,18 @@ public class Clone {
             default:
                 System.out.println("Wrong command");
         }
-        System.out.println();
+
+        /*
+        while(true) {
+            System.out.print("Command: ");
+            String command = scanner.nextLine();
+
+        }
+*/
+
+//        System.out.println();
+
+
 
     }
     private static void start() throws IOException {
@@ -114,20 +136,11 @@ public class Clone {
     }
 
     private static void createContentFile() throws IOException {
-        File tempFile = new File(mainRepoPath + "temp-clone/tempclone.txt");
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-
-        try {
-            oos.writeObject(contents);
-        } finally {
-            oos.close();
-        }
+        String filePath = mainRepoPath + "temp-clone/tempclone.txt";
+        writeFileContent(filePath, contents);
     }
 
     private static void save() throws IOException, NoSuchAlgorithmException {
-        boolean successfull = true;
         getMadeContents();
         if (contents.size() == 0) {
             System.out.println("Need to make a clone before save. use " + RED_COLOR + "clone make" + RESET);
@@ -135,43 +148,24 @@ public class Clone {
         }
         String hashCode = generateHashCode();
         SaveNode newSaveNode = new SaveNode(hashCode, contents);
+        String filePath = mainRepoPath + "clones/" + hashCode + ".db";
+        writeFileContent(filePath, newSaveNode);
 
-        File file = new File(mainRepoPath + "clones/" + hashCode + ".db");
-        file.createNewFile();
-        FileOutputStream fos = new FileOutputStream(file);
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        try {
-            oos.writeObject(newSaveNode);
-        } catch (IOException e) {
-            successfull = false;
-            throw new RuntimeException(e);
-        } finally {
-            oos.close();
-            if (successfull) {
-                takeHashCodes();
-                hashCodes.add(hashCode);
-                logHashCodes();
-                setHeadClone(hashCode);
-                System.out.println("Clone " + YELLOW_COLOR + hashCodes.get(hashCodes.size() -1).substring(0,7) + RESET + " has been saved successfully.");
-            }
-        }
+        takeHashCodes();
+        hashCodes.add(hashCode);
+        logHashCodes();
+        setHeadClone(hashCode);
+        System.out.println("Clone " + YELLOW_COLOR + hashCodes.get(hashCodes.size() -1).substring(0,7) + RESET + " has been saved successfully.");
     }
 
-    private static void getMadeContents() throws IOException {
-        File tempFile = new File(mainRepoPath + "temp-clone/tempclone.txt");
-        FileInputStream fis = new FileInputStream(tempFile);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        ObjectInputStream ois = new ObjectInputStream(bis);
-
-        try {
-            contents = (ArrayList<FileDetails>) ois.readObject();
+    private static void getMadeContents()  {
+        String filePath = mainRepoPath + "temp-clone/tempclone.txt";
+        try{
+            contents = (ArrayList<FileDetails>) readFileContent(filePath);
         } catch (EOFException e) {
             System.out.println("Need to make a clone before save. use " + RED_COLOR + "clone make" + RESET);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            ois.close();
         }
     }
 
@@ -181,7 +175,6 @@ public class Clone {
         oos.writeObject(contents);
         oos.flush();
         byte[] byteArray =  baos.toByteArray();
-
         return calculateHashCode(byteArray);
     }
 
@@ -198,62 +191,35 @@ public class Clone {
     }
 
     private static void takeHashCodes() throws IOException {
-        Path pathToHashCodes = Paths.get(mainRepoPath + "clone-hash/clonehash.txt");
-        FileInputStream fis = new FileInputStream(pathToHashCodes.toAbsolutePath().toString());
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        ObjectInputStream ois = null;
-        try {
-            ois = new ObjectInputStream(bis);
-            hashCodes = (ArrayList<String>) ois.readObject();
-            ois.close();
-        } catch (NullPointerException e) {
 
+        String filePath = mainRepoPath + "clone-hash/clonehash.txt";
+        try{
+            hashCodes = (ArrayList<String>) readFileContent(filePath);
         } catch (EOFException e) {
 
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 
     private static void logHashCodes() throws IOException {
-        Path pathToHashCodes = Paths.get(mainRepoPath + "clone-hash/clonehash.txt");
-        FileOutputStream fos = new FileOutputStream(pathToHashCodes.toAbsolutePath().toString());
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        try {
-            oos.writeObject(hashCodes);
-        } finally {
-            oos.close();
-        }
+
+        String filePath = mainRepoPath + "clone-hash/clonehash.txt";
+        writeFileContent(filePath, hashCodes);
     }
 
     private static void setHeadClone(String headCloneCode) throws IOException {
-        Path pathToHeadCloneCode = Paths.get(mainRepoPath + "clone-hash/headhash.txt");
-        FileOutputStream fos = new FileOutputStream(pathToHeadCloneCode.toAbsolutePath().toString());
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        try {
-            bos.write(headCloneCode.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            bos.close();
-            if (!headCloneCode.equals(hashCodes.get(hashCodes.size() -1))) {
-                System.out.println("HEAD detached from the present. You can see the files, go through the past clones but cannot save changes.");
-            }
+
+        String filePath = mainRepoPath + "clone-hash/headhash.txt";
+        writeFileContent(filePath, headCloneCode.getBytes());
+        if (!headCloneCode.equals(hashCodes.get(hashCodes.size() -1))) {
+            System.out.println("HEAD detached from the present. You can see the files, go through the past clones but cannot save changes.");
         }
     }
 
     private static String getHeadClone() throws IOException {
-        String headHashCode = "";
-        Path pathToHeadCloneCode = Paths.get(mainRepoPath + "clone-hash/headhash.txt");
-        FileInputStream fis = new FileInputStream(pathToHeadCloneCode.toAbsolutePath().toString());
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        try {
-            byte[] buffer = bis.readAllBytes();
-            headHashCode = new String(buffer);
-        } finally {
-            bis.close();
-        }
+
+        String filePath = mainRepoPath + "clone-hash/headhash.txt";
+        byte[]hashcodeBuffer = (byte[]) readFileContent(filePath);
+        String headHashCode = new String(hashcodeBuffer);
         return headHashCode;
     }
 
@@ -274,7 +240,7 @@ public class Clone {
         }
     }
 
-                        /* Activating clone */
+    /* Activating clone */
     private static void selectClone(String hashCode) throws IOException {
         if (hashCodes.size() == 0) takeHashCodes();
         for (String code : hashCodes) {
@@ -288,19 +254,11 @@ public class Clone {
     }
 
     private static void activateClone(String hashCode) throws IOException {
-        File dbFile = new File(mainRepoPath + "clones/" + hashCode + ".db");
-        FileInputStream fis = new FileInputStream(dbFile);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        ObjectInputStream ois = new ObjectInputStream(bis);
-        try {
-            SaveNode cloneObject = (SaveNode) ois.readObject();
-            extractClone(cloneObject);
-            setHeadClone(hashCode);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } finally {
-            ois.close();
-        }
+
+        String filePath = mainRepoPath + "clones/" + hashCode + ".db";
+        SaveNode cloneObject = (SaveNode) readFileContent(filePath);
+        extractClone(cloneObject);
+        setHeadClone(hashCode);
     }
 
     private static void extractClone(SaveNode clone) throws IOException {
@@ -314,16 +272,8 @@ public class Clone {
             File directory = new File(directoryPath);
             if (!directory.exists()) directory.mkdir();
 
-            File cloneFile = new File(files.getPath());
-            FileOutputStream fos = new FileOutputStream(cloneFile);
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-            try {
-                bos.write(files.getBuffer());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                bos.close();
-            }
+            String filePath = files.getPath();
+            writeFileContent(filePath, files.getBuffer());
         }
     }
 
@@ -343,16 +293,38 @@ public class Clone {
         Instant instant = Instant.now();
         LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
         String timeStamp = dateTime.toString();
-        File uniqueFile = new File(mainRepoPath + "uniqueclone.txt");
 
-        FileOutputStream fos = new FileOutputStream(uniqueFile);
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        try{
-            bos.write(timeStamp.getBytes());
-        } catch (IOException e) {
+        String filePath = mainRepoPath + "uniqueclone.txt";
+        writeFileContent(filePath,timeStamp.getBytes());
+    }
+
+    private static Object readFileContent(String filePath) throws IOException {
+        File dbFile = new File(filePath);
+        FileInputStream fis = new FileInputStream(dbFile);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        Object cloneObject;
+        try {
+            cloneObject = ois.readObject();
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } finally {
-            bos.close();
+            ois.close();
+
+        }
+        return cloneObject;
+    }
+
+    private static void writeFileContent(String filePath, Object contentList ) throws IOException {
+        File tempFile = new File(filePath);
+        FileOutputStream fos = new FileOutputStream(tempFile);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+        try {
+            oos.writeObject(contentList);
+        } finally {
+            oos.close();
         }
     }
 }
