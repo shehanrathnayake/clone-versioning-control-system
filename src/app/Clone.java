@@ -32,15 +32,13 @@ public class Clone {
 
 
         targetFolderPath = args[0];
-        System.out.println(targetFolderPath);
         mainRepoPath = targetFolderPath + "/.clone/";
-        System.out.println(mainRepoPath);
         File folderBase = new File(mainRepoPath);
         String command = "";
 
         if (args.length > 1) command = args[1];
         else {
-            System.out.println("Hi, I am there. Use commands to work with me...");
+            cloneIntroduction();
             return;
         }
 
@@ -50,10 +48,19 @@ public class Clone {
         Path targetFolder = Paths.get(targetFolderPath);
 
         switch (command) {
+            case "-h":
+            case "--help":
+                cloneHelpCenter();
+                break;
+
+            case "-v":
+            case "--version":
+                System.out.println("\tclone version 0.8.0");
+                break;
+
             case "start":
                 if (!folderBase.exists()) {
                     start();
-//                    takeHashCodes();
                     System.out.println("New repository is created...");
 
                 }else System.out.println("Already a repository");
@@ -163,7 +170,7 @@ public class Clone {
         try{
             contents = (ArrayList<FileDetails>) readFileContent(filePath);
         } catch (EOFException e) {
-            System.out.println("Need to make a clone before save. use " + RED_COLOR + "clone make" + RESET);
+            System.out.println("Need to make a clone before save. Execute " + RED_COLOR + "clone make" + RESET);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -191,23 +198,18 @@ public class Clone {
     }
 
     private static void takeHashCodes() throws IOException {
-
         String filePath = mainRepoPath + "clone-hash/clonehash.txt";
         try{
             hashCodes = (ArrayList<String>) readFileContent(filePath);
-        } catch (EOFException e) {
-
-        }
+        } catch (EOFException e) {}
     }
 
     private static void logHashCodes() throws IOException {
-
         String filePath = mainRepoPath + "clone-hash/clonehash.txt";
         writeFileContent(filePath, hashCodes);
     }
 
     private static void setHeadClone(String headCloneCode) throws IOException {
-
         String filePath = mainRepoPath + "clone-hash/headhash.txt";
         writeFileContent(filePath, headCloneCode.getBytes());
         if (!headCloneCode.equals(hashCodes.get(hashCodes.size() -1))) {
@@ -216,7 +218,6 @@ public class Clone {
     }
 
     private static String getHeadClone() throws IOException {
-
         String filePath = mainRepoPath + "clone-hash/headhash.txt";
         byte[]hashcodeBuffer = (byte[]) readFileContent(filePath);
         String headHashCode = new String(hashcodeBuffer);
@@ -254,7 +255,6 @@ public class Clone {
     }
 
     private static void activateClone(String hashCode) throws IOException {
-
         String filePath = mainRepoPath + "clones/" + hashCode + ".db";
         SaveNode cloneObject = (SaveNode) readFileContent(filePath);
         extractClone(cloneObject);
@@ -263,7 +263,6 @@ public class Clone {
 
     private static void extractClone(SaveNode clone) throws IOException {
         for (FileDetails files : clone.getContents()) {
-
             String fileName = "/[.]?[A-Za-z0-9_[-] ]+[.][A-Za-z]+$";
             Pattern pattern = Pattern.compile(fileName);
             Matcher matcher = pattern.matcher(files.getPath());
@@ -310,7 +309,6 @@ public class Clone {
             throw new RuntimeException(e);
         } finally {
             ois.close();
-
         }
         return cloneObject;
     }
@@ -320,11 +318,34 @@ public class Clone {
         FileOutputStream fos = new FileOutputStream(tempFile);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         ObjectOutputStream oos = new ObjectOutputStream(bos);
-
         try {
             oos.writeObject(contentList);
         } finally {
             oos.close();
         }
+    }
+
+    private static void cloneIntroduction() {
+        System.out.println("  _   _      _ _\n" +
+                " | | | | ___| | | ___\n" +
+                " | |_| |/ _ \\ | |/ _ \\\n" +
+                " |  _  |  __/ | | (_) |\n" +
+                " |_| |_|\\___|_|_|\\___/\n\n" +
+                "I am " + YELLOW_COLOR +"Clone" + RESET + ". A Version Control System for your projects.\n\n" +
+                "\tExecute " + RED_COLOR + "clone [-h | --help]" + RESET + " To see the command list.\n");
+    }
+
+    private static void cloneHelpCenter() {
+        System.out.println("\nAll the command list");
+        System.out.println("\t" + RED_COLOR + "clone" + RESET + " - Welcome notice");
+        System.out.println("\t" + RED_COLOR + "clone [-h | --help]" + RESET + " - To see the command list");
+        System.out.println("\t" + RED_COLOR + "clone [-v | --version]" + RESET + " - To see the version");
+        System.out.println();
+        System.out.println("\t" + RED_COLOR + "clone start" + RESET + " - To start cloning");
+        System.out.println("\t" + RED_COLOR + "clone make" + RESET + " - To make a new clone");
+        System.out.println("\t" + RED_COLOR + "clone save" + RESET + " - To save the prepared clone permanently");
+        System.out.println("\t" + RED_COLOR + "clone log" + RESET + " - To see the clone list");
+        System.out.println("\t" + RED_COLOR + "clone activate <hashcode>" + RESET + " - To traverse along the saved clones");
+        System.out.println();
     }
 }
