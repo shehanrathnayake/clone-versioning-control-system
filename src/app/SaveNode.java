@@ -5,18 +5,18 @@ import java.util.ArrayList;
 
 public class SaveNode implements Serializable {
     private String hashCode;
-    private ArrayList<FileDetails> contents;
+    private ArrayList<FileMeta> contents;
     private String prevHashCode;
 
     public SaveNode() {
     }
 
-    public SaveNode(String hashCode, ArrayList<FileDetails> contents) {
+    public SaveNode(String hashCode, ArrayList<FileMeta> contents) {
         this.hashCode = hashCode;
         this.contents = contents;
     }
 
-    public SaveNode(String hashCode, ArrayList<FileDetails> contents, String prevHashCode) {
+    public SaveNode(String hashCode, ArrayList<FileMeta> contents, String prevHashCode) {
         this.hashCode = hashCode;
         this.contents = contents;
         this.prevHashCode = prevHashCode;
@@ -30,11 +30,11 @@ public class SaveNode implements Serializable {
         this.hashCode = hashCode;
     }
 
-    public ArrayList<FileDetails> getContents() {
+    public ArrayList<FileMeta> getContents() {
         return contents;
     }
 
-    public void setContents(ArrayList<FileDetails> contents) {
+    public void setContents(ArrayList<FileMeta> contents) {
         this.contents = contents;
     }
 

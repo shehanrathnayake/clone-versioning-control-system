@@ -19,6 +19,8 @@ public class Clone {
     public static String mainRepoPath;
     public static ArrayList<FileDetails> contents = new ArrayList<>();
     public static ArrayList<String> hashCodes = new ArrayList<>();
+    public static ArrayList<FileMeta> contentHashCodes = new ArrayList<>();
+    public static ArrayList<String> nodeHashCodes = new ArrayList<>();
     public static final String YELLOW_COLOR = "\033[33;1m";
     public static final String RED_COLOR = "\033[31;1m";
     public static final String RESET = "\033[0m";
@@ -129,7 +131,7 @@ public class Clone {
             fileRef.mkdir();
         }
 
-        String[] repoFiles = {"clone-hash/clonehash.txt", "clone-hash/headhash.txt", "uniqueclone.txt", "temp-clone/tempclone.txt"};
+        String[] repoFiles = {"clone-hash/clonehash.clone", "clone-hash/headhash.clone", "uniqueclone.clone", "temp-clone/tempclone.clone"};
         for (String repoFile : repoFiles) {
             File fileHash = new File(mainRepoPath + repoFile);
             fileHash.createNewFile();
@@ -143,7 +145,7 @@ public class Clone {
     }
 
     private static void createContentFile() throws IOException {
-        String filePath = mainRepoPath + "temp-clone/tempclone.txt";
+        String filePath = mainRepoPath + "temp-clone/tempclone.clone";
         writeFileContent(filePath, contents);
     }
 
@@ -155,7 +157,7 @@ public class Clone {
         }
         String hashCode = generateHashCode();
         SaveNode newSaveNode = new SaveNode(hashCode, contents);
-        String filePath = mainRepoPath + "clones/" + hashCode + ".db";
+        String filePath = mainRepoPath + "clones/" + hashCode + ".clone";
         writeFileContent(filePath, newSaveNode);
 
         takeHashCodes();
@@ -166,7 +168,7 @@ public class Clone {
     }
 
     private static void getMadeContents()  {
-        String filePath = mainRepoPath + "temp-clone/tempclone.txt";
+        String filePath = mainRepoPath + "temp-clone/tempclone.clone";
         try{
             contents = (ArrayList<FileDetails>) readFileContent(filePath);
         } catch (EOFException e) {
@@ -185,7 +187,7 @@ public class Clone {
         return calculateHashCode(byteArray);
     }
 
-    private static String calculateHashCode(byte[] byteArray) throws NoSuchAlgorithmException, NoSuchAlgorithmException {
+    private static String calculateHashCode(byte[] byteArray) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hashArray = digest.digest(byteArray);
 
@@ -198,19 +200,19 @@ public class Clone {
     }
 
     private static void takeHashCodes() throws IOException {
-        String filePath = mainRepoPath + "clone-hash/clonehash.txt";
+        String filePath = mainRepoPath + "clone-hash/clonehash.clone";
         try{
-            hashCodes = (ArrayList<String>) readFileContent(filePath);
+            nodeHashCodes = (ArrayList<String>) readFileContent(filePath);
         } catch (EOFException e) {}
     }
 
     private static void logHashCodes() throws IOException {
-        String filePath = mainRepoPath + "clone-hash/clonehash.txt";
+        String filePath = mainRepoPath + "clone-hash/clonehash.clone";
         writeFileContent(filePath, hashCodes);
     }
 
     private static void setHeadClone(String headCloneCode) throws IOException {
-        String filePath = mainRepoPath + "clone-hash/headhash.txt";
+        String filePath = mainRepoPath + "clone-hash/headhash.clone";
         writeFileContent(filePath, headCloneCode.getBytes());
         if (!headCloneCode.equals(hashCodes.get(hashCodes.size() -1))) {
             System.out.println("HEAD detached from the present. You can see the files, go through the past clones but cannot save changes.");
@@ -218,7 +220,7 @@ public class Clone {
     }
 
     private static String getHeadClone() throws IOException {
-        String filePath = mainRepoPath + "clone-hash/headhash.txt";
+        String filePath = mainRepoPath + "clone-hash/headhash.clone";
         byte[]hashcodeBuffer = (byte[]) readFileContent(filePath);
         String headHashCode = new String(hashcodeBuffer);
         return headHashCode;
@@ -255,7 +257,7 @@ public class Clone {
     }
 
     private static void activateClone(String hashCode) throws IOException {
-        String filePath = mainRepoPath + "clones/" + hashCode + ".db";
+        String filePath = mainRepoPath + "clones/" + hashCode + ".clone";
         SaveNode cloneObject = (SaveNode) readFileContent(filePath);
         extractClone(cloneObject);
         setHeadClone(hashCode);
@@ -293,7 +295,7 @@ public class Clone {
         LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
         String timeStamp = dateTime.toString();
 
-        String filePath = mainRepoPath + "uniqueclone.txt";
+        String filePath = mainRepoPath + "uniqueclone.clone";
         writeFileContent(filePath,timeStamp.getBytes());
     }
 
@@ -341,8 +343,8 @@ public class Clone {
         System.out.println("\t" + RED_COLOR + "clone [-h | --help]" + RESET + " - To see the command list");
         System.out.println("\t" + RED_COLOR + "clone [-v | --version]" + RESET + " - To see the version");
         System.out.println();
-        System.out.println("\t" + RED_COLOR + "clone start" + RESET + " - To start cloning");
-        System.out.println("\t" + RED_COLOR + "clone make" + RESET + " - To make a new clone");
+        System.out.println("\t" + RED_COLOR + "clone start" + RESET + " - To initialize a cloning factory");
+        System.out.println("\t" + RED_COLOR + "clone make" + RESET + " - To generate a new clone");
         System.out.println("\t" + RED_COLOR + "clone save" + RESET + " - To save the prepared clone permanently");
         System.out.println("\t" + RED_COLOR + "clone log" + RESET + " - To see the clone list");
         System.out.println("\t" + RED_COLOR + "clone activate <hashcode>" + RESET + " - To traverse along the saved clones");
