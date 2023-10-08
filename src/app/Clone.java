@@ -336,7 +336,7 @@ public class Clone {
     }
 
     private static void cloneHelpCenter() {
-        System.out.println("\nAll the command list");
+        System.out.println("\n\tAll the command list\n");
         System.out.println("\t" + RED_COLOR + "clone" + RESET + " - Welcome notice");
         System.out.println("\t" + RED_COLOR + "clone [-h | --help]" + RESET + " - To see the command list");
         System.out.println("\t" + RED_COLOR + "clone [-v | --version]" + RESET + " - To see the version");
