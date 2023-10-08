@@ -7,6 +7,7 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,10 +20,26 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
         if (file.toAbsolutePath().toString().equals(Clone.mainRepoPath + "uniqueclone.txt") || !matcher.find()) {
             byte[] buffer = getBytes(file);
-            FileDetails fileDetails = new FileDetails(path, buffer);
-            Clone.contents.add(fileDetails);
-        }
+            try {
+                String hashcode = Clone.calculateHashCode(buffer);
+                FileMeta fileMeta1 = new FileMeta(path, hashcode);
+                boolean isDuplicate = false;
+                for (String fileHashCode : Clone.fileHashCodes) {
+                    if (fileHashCode.equals(hashcode)){
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+                if (!isDuplicate) {
 
+                    new MadeData(new)
+//                    Clone.contents.add(new FileDetails(hashcode, buffer));
+//                    Clone.contentMeta.add(new FileMeta(path, hashcode));
+                }
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return FileVisitResult.CONTINUE;
     }
 

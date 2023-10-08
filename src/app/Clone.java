@@ -10,17 +10,16 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Clone {
     public static String targetFolderPath;
     public static String mainRepoPath;
-    public static ArrayList<FileDetails> contents = new ArrayList<>();
-    public static ArrayList<String> hashCodes = new ArrayList<>();
-    public static ArrayList<FileMeta> contentHashCodes = new ArrayList<>();
-    public static ArrayList<String> nodeHashCodes = new ArrayList<>();
+    public static ArrayList<String> fileHashCodes = new ArrayList<>();
+    public static ArrayList<FileDetails> fileContentList = new ArrayList<>();
+    public static ArrayList<FileMeta> fileMetaList = new ArrayList<>();
+    private static ArrayList<CloneUnit> cloneList = new ArrayList<>();
     public static final String YELLOW_COLOR = "\033[33;1m";
     public static final String RED_COLOR = "\033[31;1m";
     public static final String RESET = "\033[0m";
@@ -70,8 +69,8 @@ public class Clone {
 
             case "make":
                 if (folderBase.exists()) {
-                    if (hashCodes.size() == 0) takeHashCodes();
-                    if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
+                    if (nodeFilesHashCodes.size() == 0) takeHashCodes();
+                    if (nodeFilesHashCodes.size() == 0 || getHeadClone().equals(nodeFilesHashCodes.get(nodeFilesHashCodes.size() -1))) {
                         make(targetFolder);
                     }
                     else System.out.println("Cannot make clones while HEAD detached from main");
@@ -81,8 +80,8 @@ public class Clone {
 
             case "save":
                 if (folderBase.exists()) {
-                    if (hashCodes.size() == 0) takeHashCodes();
-                    if (hashCodes.size() == 0 || getHeadClone().equals(hashCodes.get(hashCodes.size() -1))) {
+                    if (nodeFilesHashCodes.size() == 0) takeHashCodes();
+                    if (nodeFilesHashCodes.size() == 0 || getHeadClone().equals(nodeFilesHashCodes.get(nodeFilesHashCodes.size() -1))) {
                         save();
                         contents = new ArrayList<>();
                     } else System.out.println("Cannot save clones while HEAD detached from main");
@@ -92,11 +91,14 @@ public class Clone {
 
             case "log":
                 if (folderBase.exists()) {
-                    if (hashCodes.size() == 0) takeHashCodes();
+                    if (nodeFilesHashCodes.size() == 0) takeHashCodes();
                     showClones();
                 }
                 else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
                 break;
+
+            case "show":
+
 
             case "activate":
                 if (folderBase.exists()) {
@@ -125,13 +127,14 @@ public class Clone {
 
     }
     private static void start() throws IOException {
-        String[] ignorePaths = {"", "clones", "temp-clone", "clone-hash", ".ignoreclone"};
+        String[] ignorePaths = {"", "clones", "content-hashcodes", "contents", "madedata", ".ignoreclone"};
         for (String ignorePath : ignorePaths) {
             File fileRef = new File(mainRepoPath + ignorePath);
             fileRef.mkdir();
         }
 
-        String[] repoFiles = {"clone-hash/clonehash.clone", "clone-hash/headhash.clone", "uniqueclone.clone", "temp-clone/tempclone.clone"};
+        String[] repoFiles = {"clones/cloneList.clone", "clones/tailcloneunit.clone", "clones/clonehascodelist.clone", "clones/headhash.clone", "uniqueclone.clone", "madedata/madedata.clone",
+                                "content-hashcodes/contenthashcodes.clone"};
         for (String repoFile : repoFiles) {
             File fileHash = new File(mainRepoPath + repoFile);
             fileHash.createNewFile();
@@ -145,8 +148,9 @@ public class Clone {
     }
 
     private static void createContentFile() throws IOException {
-        String filePath = mainRepoPath + "temp-clone/tempclone.clone";
-        writeFileContent(filePath, contents);
+        String filePath = mainRepoPath + "madedata/madedata.clone";
+        MadeData madeData = new MadeData(fileMetaList, fileContentList, fileHashCodes);
+        writeFileContent(filePath, madeData);
     }
 
     private static void save() throws IOException, NoSuchAlgorithmException {
@@ -156,7 +160,7 @@ public class Clone {
             return;
         }
         String hashCode = generateHashCode();
-        SaveNode newSaveNode = new SaveNode(hashCode, contents);
+        CloneUnit newSaveNode = new CloneUnit(hashCode, contents);
         String filePath = mainRepoPath + "clones/" + hashCode + ".clone";
         writeFileContent(filePath, newSaveNode);
 
@@ -187,7 +191,7 @@ public class Clone {
         return calculateHashCode(byteArray);
     }
 
-    private static String calculateHashCode(byte[] byteArray) throws NoSuchAlgorithmException {
+    static String calculateHashCode(byte[] byteArray) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hashArray = digest.digest(byteArray);
 
@@ -258,22 +262,22 @@ public class Clone {
 
     private static void activateClone(String hashCode) throws IOException {
         String filePath = mainRepoPath + "clones/" + hashCode + ".clone";
-        SaveNode cloneObject = (SaveNode) readFileContent(filePath);
+        CloneUnit cloneObject = (CloneUnit) readFileContent(filePath);
         extractClone(cloneObject);
         setHeadClone(hashCode);
     }
 
-    private static void extractClone(SaveNode clone) throws IOException {
+    private static void extractClone(CloneUnit clone) throws IOException {
         for (FileDetails files : clone.getContents()) {
             String fileName = "/[.]?[A-Za-z0-9_[-] ]+[.][A-Za-z]+$";
             Pattern pattern = Pattern.compile(fileName);
-            Matcher matcher = pattern.matcher(files.getPath());
+            Matcher matcher = pattern.matcher(files.getHashcode());
             matcher.find();
-            String directoryPath = files.getPath().substring(0, matcher.start());
+            String directoryPath = files.getHashcode().substring(0, matcher.start());
             File directory = new File(directoryPath);
             if (!directory.exists()) directory.mkdir();
 
-            String filePath = files.getPath();
+            String filePath = files.getHashcode();
             writeFileContent(filePath, files.getBuffer());
         }
     }
