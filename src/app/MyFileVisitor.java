@@ -8,34 +8,35 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MyFileVisitor extends SimpleFileVisitor<Path> {
+
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         String path = file.toAbsolutePath().toString();
         Pattern pattern = Pattern.compile(Clone.mainRepoPath);
         Matcher matcher = pattern.matcher(path);
 
+
         if (file.toAbsolutePath().toString().equals(Clone.mainRepoPath + "uniqueclone.txt") || !matcher.find()) {
             byte[] buffer = getBytes(file);
             try {
                 String hashcode = Clone.calculateHashCode(buffer);
-                FileMeta fileMeta1 = new FileMeta(path, hashcode);
-                boolean isDuplicate = false;
-                for (String fileHashCode : Clone.fileHashCodes) {
-                    if (fileHashCode.equals(hashcode)){
-                        isDuplicate = true;
-                        break;
-                    }
-                }
-                if (!isDuplicate) {
-
-                    new MadeData(new)
-//                    Clone.contents.add(new FileDetails(hashcode, buffer));
-//                    Clone.contentMeta.add(new FileMeta(path, hashcode));
-                }
+                FileMeta fileMeta = new FileMeta(path, hashcode);
+                Clone.currentFileList.add(fileMeta);
+//                boolean isDuplicate = false;
+//                for (FileMeta lastCloneFileMeta : Clone.lastCloneFileList) {
+//                    if (lastCloneFileMeta.getHashcode().equals(hashcode)){
+//                        isDuplicate = true;
+//                        break;
+//                    }
+//                }
+//                if (!isDuplicate) {
+//                    Clone.newFilesList.add(fileMeta);
+//                }
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             }
