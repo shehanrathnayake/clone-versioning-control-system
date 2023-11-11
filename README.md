@@ -9,7 +9,7 @@ This project is licensed under [MIT License](License.txt).
 
 ## Clone Installation Guide
 
-The installation files are available for Ubuntu users in ```.deb``` file in this repository.
+The ```.deb``` file is available for Ubuntu users in this repository.
 
 ```sudo dpkg -i clone-0.8.0-ubuntu.deb``` to install.
 
@@ -20,7 +20,7 @@ See the README.txt inside the [clone-0.8.0-ubuntu-package](clone-0.7.1-ubuntu-pa
 ### Introduction
 Clone is a version control software designed to manage your projects efficiently. This guide provides instructions on how to use Clone to manage your code repositories effectively.
 
-```clone``` - To see whether Clone has been installed successfully
+```clone``` - To check whether the Clone app has been installed successfully
 
 ### Initializing a Clone Repository
 To initialize a Clone repository in the specified target directory, run the following command:
