@@ -72,7 +72,7 @@ public class Clone {
             case "make":
                 if (folderBase.exists()) {
                     if (cloneList.size() == 0) takeClones();
-                    if (getHeadClone().equals(cloneList.get(cloneList.size() -1))) {
+                    if (getHeadClone() == null || getHeadClone().equals(cloneList.get(cloneList.size() -1).getCloneHashcode())) {
                         make(targetFolder);
                     }
                     else System.out.println("Cannot make clones while HEAD detached from main");
@@ -89,7 +89,7 @@ public class Clone {
             case "save":
                 if (folderBase.exists()) {
                     if (cloneList.size() == 0) takeClones();
-                    if (getHeadClone().equals(cloneList.get(cloneList.size() -1))) {
+                    if (getHeadClone() == null || getHeadClone().equals(cloneList.get(cloneList.size() -1).getCloneHashcode())) {
                         save();
                     } else System.out.println("Cannot save clones while HEAD detached from main");
                 }
@@ -134,13 +134,13 @@ public class Clone {
 
     }
     private static void start() throws IOException {
-        String[] ignorePaths = {"", "clones", "content-hashcodes", "contents", "madedata", ".ignoreclone"};
+        String[] ignorePaths = {"", "clones", "clones/filedata", "content-hashcodes", "contents", "madedata", ".ignoreclone"};
         for (String ignorePath : ignorePaths) {
             File fileRef = new File(mainRepoPath + ignorePath);
             fileRef.mkdir();
         }
 
-        String[] repoFiles = {"clones/cloneList.clone", "clones/tailcloneunit.clone", "clones/clonehascodelist.clone", "clones/filedata/", "clones/headhash.clone", "uniqueclone.clone", "madedata/currentfilelist.clone",
+        String[] repoFiles = {"clones/cloneList.clone", "clones/tailcloneunit.clone", "clones/clonehascodelist.clone", "clones/headhash.clone", "uniqueclone.clone", "madedata/currentfilelist.clone",
                                 "content-hashcodes/contenthashcodes.clone"};
         for (String repoFile : repoFiles) {
             File fileHash = new File(mainRepoPath + repoFile);
@@ -188,22 +188,35 @@ public class Clone {
         String folderPathOfContent = mainRepoPath + "clones/filedata/";
         try {
             fileHashCodes = (ArrayList<String>) readFileContent(filePath);
+        } catch (IOException e) {
+
+        }
+
+        try{
             for (FileMeta currentFile : currentFileList) {
                 if (!fileHashCodes.contains(currentFile.getHashcode())) {
-                    byte[] buffer = (byte[]) readFileContent(currentFile.getFilePath());
-                    writeFileContent(folderPathOfContent + currentFile.getHashcode() + ".clone", buffer);
+//                    byte[] buffer = (byte[]) readFileContent(currentFile.getFilePath());
+
+//                    Object buffer = readFileContent(currentFile.getFilePath());
+
+//                    writeFileContent(folderPathOfContent + currentFile.getHashcode() + ".clone", buffer);
+                    byte[] buffer = MyFileVisitor.getBytes(Paths.get(currentFile.getFilePath()));
+                    Path targetPath = Paths.get(folderPathOfContent + currentFile.getHashcode() + ".clone");
+                    MyFileVisitor.saveBytes(targetPath, buffer);
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     private static boolean findChanges() {
+        if (cloneList.size() == 0) return true;
         ArrayList<FileMeta> lastCloneFileList = cloneList.get(cloneList.size() -1).getFileList();
         if (lastCloneFileList.size() != currentFileList.size()) return true;
         for (int i = 0; i < lastCloneFileList.size(); i++) {
-            if (!(lastCloneFileList.get(i).getFilePath().equals(currentFileList.get(i).getFilePath()) && lastCloneFileList.get(i).getFilePath().equals(currentFileList.get(i).getFilePath()))) {
+            if (!(lastCloneFileList.get(i).getFilePath().equals(currentFileList.get(i).getFilePath()) && lastCloneFileList.get(i).getHashcode().equals(currentFileList.get(i).getHashcode()))) {
                 return true;
             }
         }
@@ -255,7 +268,7 @@ public class Clone {
 //    }
 
     private static void setHeadClone(String headCloneCode) throws IOException {
-        String filePath = mainRepoPath + "clone-hash/headhash.clone";
+        String filePath = mainRepoPath + "clones/headhash.clone";
         writeFileContent(filePath, headCloneCode.getBytes());
         if (!headCloneCode.equals(cloneList.get(cloneList.size() -1).getCloneHashcode())) {
             System.out.println("HEAD detached from the present. You can see the files, go through the past clones but cannot save changes.");
@@ -263,10 +276,17 @@ public class Clone {
     }
 
     private static String getHeadClone() throws IOException {
-        String filePath = mainRepoPath + "clone-hash/headhash.clone";
-        byte[]hashcodeBuffer = (byte[]) readFileContent(filePath);
-        String headHashCode = new String(hashcodeBuffer);
-        return headHashCode;
+        String filePath = mainRepoPath + "clones/headhash.clone";
+        byte[] hashcodeBuffer = null;
+        try{
+            hashcodeBuffer = (byte[]) readFileContent(filePath);
+            String headHashCode = new String(hashcodeBuffer);
+            return headHashCode;
+        } catch (EOFException e){
+            return null;
+        }
+
+
     }
 
     private static void showClones() throws IOException {
@@ -317,11 +337,13 @@ public class Clone {
             File directory = new File(directoryPath);
             if (!directory.exists()) directory.mkdir();
 
-            byte[] contentBuffer = (byte[]) readFileContent(folderPathOfContent + fileMeta.getHashcode() + ".clone");
-            writeFileContent(fileMeta.getFilePath(),contentBuffer);
+//            byte[] contentBuffer = (byte[]) readFileContent(folderPathOfContent + fileMeta.getHashcode() + ".clone");
+//            Object contentBuffer = readFileContent(folderPathOfContent + fileMeta.getHashcode() + ".clone");
+//            writeFileContent(fileMeta.getFilePath(),contentBuffer);
+            Path filePath = Paths.get(folderPathOfContent + fileMeta.getHashcode() + ".clone");
+            byte[] buffer = MyFileVisitor.getBytes(filePath);
+            MyFileVisitor.saveBytes(Paths.get(fileMeta.getFilePath()),buffer);
         }
-
-
         setHeadClone(clone.getCloneHashcode());
     }
 
@@ -377,13 +399,13 @@ public class Clone {
         return cloneObject;
     }
 
-    private static void writeFileContent(String filePath, Object contentList ) throws IOException {
+    private static void writeFileContent(String filePath, Object content ) throws IOException {
         File tempFile = new File(filePath);
         FileOutputStream fos = new FileOutputStream(tempFile);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         ObjectOutputStream oos = new ObjectOutputStream(bos);
         try {
-            oos.writeObject(contentList);
+            oos.writeObject(content);
 
         } finally {
             oos.close();

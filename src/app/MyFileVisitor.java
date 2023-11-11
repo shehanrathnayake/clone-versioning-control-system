@@ -1,8 +1,6 @@
 package app;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
@@ -44,7 +42,7 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         return FileVisitResult.CONTINUE;
     }
 
-    private byte[] getBytes(Path file) throws IOException {
+    public static byte[] getBytes(Path file) throws IOException {
         FileInputStream fis = new FileInputStream(file.toAbsolutePath().toString());
         BufferedInputStream bis = new BufferedInputStream(fis);
         byte[] buffer = null;
@@ -55,5 +53,17 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         }
 
         return buffer;
+    }
+
+    public static void saveBytes(Path file, byte[] buffer) throws IOException {
+        FileOutputStream fos = new FileOutputStream(file.toAbsolutePath().toString());
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+
+        try{
+            bos.write(buffer);
+
+        } finally {
+            bos.close();
+        }
     }
 }
