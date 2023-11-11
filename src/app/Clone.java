@@ -84,7 +84,7 @@ public class Clone {
                 if (folderBase.exists()) {
 
                 }
-                else System.out.println("Not a repository. Use \" + RED_COLOR + \"clone start\" + RESET + \" to start cloning")
+                else System.out.println("Not a repository. Use \" + RED_COLOR + \"clone start\" + RESET + \" to start cloning");
 
             case "save":
                 if (folderBase.exists()) {
