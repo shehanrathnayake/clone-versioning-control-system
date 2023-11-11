@@ -11,6 +11,10 @@ This project is licensed under [MIT License](License.txt).
 
 <img width="200" src="img/clone-logo.png"><br>
 
+### Supported Links
+
+- [Comprehensive Project Story on Medium](https://medium.com/@shehan_rathnayake/clone-a-git-like-version-control-system-ecf70e985de0) 👈
+
 ## Technologies Used
 
 - Java programming language
@@ -65,3 +69,8 @@ After initializing the repository, you can use various other commands for differ
 
 ![Commands demonstration through vscode 6](img/image6.png)
 
+### Support
+
+***If you like what I do, maybe consider buying me a coffee*** 🥺 👇
+
+<p><a href="https://www.buymeacoffee.com/shehanrathnayake"> <img align="left" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="37" width="157" alt="shehanrathnayake" /></a></p><br><br>
