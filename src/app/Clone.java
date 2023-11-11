@@ -98,7 +98,7 @@ public class Clone {
 
             case "log":
                 if (folderBase.exists()) {
-                    if (nodeFilesHashCodes.size() == 0) takeClones();
+                    if (cloneList.size() == 0) takeClones();
                     showClones();
                 }
                 else System.out.println("Not a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning");
@@ -272,15 +272,15 @@ public class Clone {
     private static void showClones() throws IOException {
         String headHashCode = getHeadClone();
         boolean done = false;
-        for (int i = hashCodes.size() -1; i >= 0; i--) {
-            System.out.print(YELLOW_COLOR + hashCodes.get(i).substring(0,7) + RESET);
-            if (i == hashCodes.size() -1 && hashCodes.get(i).equals(headHashCode)) {
+        for (int i = cloneList.size() -1; i >= 0; i--) {
+            System.out.print(YELLOW_COLOR + cloneList.get(i).getCloneHashcode().substring(0,7) + RESET);
+            if (i == cloneList.size() -1 && cloneList.get(i).getCloneHashcode().equals(headHashCode)) {
                 System.out.print(" " + RED_COLOR + "(HEAD -> main)" + RESET);
                 done = true;
             }
             else if (!done) {
-                if (i == hashCodes.size() -1 && !hashCodes.get(i).equals(headHashCode)) System.out.print(" " + RED_COLOR + "(main)" + RESET);
-                else if (hashCodes.get(i).equals(headHashCode)) System.out.print(" " + RED_COLOR + "(HEAD)" + RESET);
+                if (i == cloneList.size() -1 && !cloneList.get(i).getCloneHashcode().equals(headHashCode)) System.out.print(" " + RED_COLOR + "(main)" + RESET);
+                else if (cloneList.get(i).getCloneHashcode().equals(headHashCode)) System.out.print(" " + RED_COLOR + "(HEAD)" + RESET);
             }
             System.out.println();
         }
@@ -288,38 +288,57 @@ public class Clone {
 
     /* Activating clone */
     private static void selectClone(String hashCode) throws IOException {
-        if (hashCodes.size() == 0) takeClones();
-        for (String code : hashCodes) {
-            if (hashCode.equals(code.substring(0,7))) {
+        if (cloneList.size() == 0) takeClones();
+
+        for (CloneUnit cloneUnit : cloneList) {
+            if (hashCode.equals(cloneUnit.getCloneHashcode().substring(0,7))) {
                 destroyPresent(new File(targetFolderPath));
-                activateClone(code);
+                activateClone(cloneUnit);
                 return;
             }
         }
         System.out.println("Wrong code");
     }
 
-    private static void activateClone(String hashCode) throws IOException {
-        String filePath = mainRepoPath + "clones/" + hashCode + ".clone";
-        CloneUnit cloneObject = (CloneUnit) readFileContent(filePath);
-        extractClone(cloneObject);
-        setHeadClone(hashCode);
-    }
+    private static void activateClone(CloneUnit clone) throws IOException {
+//        String filePath = mainRepoPath + "clones/" + hashCode + ".clone";
+//        CloneUnit cloneObject = (CloneUnit) readFileContent(filePath);
+//        extractClone(cloneObject);
 
-    private static void extractClone(CloneUnit clone) throws IOException {
-        for (FileDetails files : clone.getContents()) {
+        String folderPathOfContent = mainRepoPath + "clones/filedata/";
+
+        for (FileMeta fileMeta : clone.getFileList()) {
+
             String fileName = "/[.]?[A-Za-z0-9_[-] ]+[.][A-Za-z]+$";
             Pattern pattern = Pattern.compile(fileName);
-            Matcher matcher = pattern.matcher(files.getHashcode());
+            Matcher matcher = pattern.matcher(fileMeta.getFilePath());
             matcher.find();
-            String directoryPath = files.getHashcode().substring(0, matcher.start());
+            String directoryPath = fileMeta.getFilePath().substring(0, matcher.start());
             File directory = new File(directoryPath);
             if (!directory.exists()) directory.mkdir();
 
-            String filePath = files.getHashcode();
-            writeFileContent(filePath, files.getBuffer());
+            byte[] contentBuffer = (byte[]) readFileContent(folderPathOfContent + fileMeta.getHashcode() + ".clone");
+            writeFileContent(fileMeta.getFilePath(),contentBuffer);
         }
+
+
+        setHeadClone(clone.getCloneHashcode());
     }
+
+//    private static void extractClone(CloneUnit clone) throws IOException {
+//        for (FileMeta files : clone.getFileList()) {
+//            String fileName = "/[.]?[A-Za-z0-9_[-] ]+[.][A-Za-z]+$";
+//            Pattern pattern = Pattern.compile(fileName);
+//            Matcher matcher = pattern.matcher(files.getHashcode());
+//            matcher.find();
+//            String directoryPath = files.getHashcode().substring(0, matcher.start());
+//            File directory = new File(directoryPath);
+//            if (!directory.exists()) directory.mkdir();
+//
+//            String filePath = files.getHashcode();
+//            writeFileContent(filePath, files.getBuffer());
+//        }
+//    }
 
     private static void destroyPresent(File file) throws IOException {
         if (file.isDirectory()) {
