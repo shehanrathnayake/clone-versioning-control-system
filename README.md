@@ -7,13 +7,21 @@
 Copyright &copy; 2023 Shehan Rathnayake. All Rights Reserved.<br>
 This project is licensed under [MIT License](License.txt).
 
+## Application Logo
+
+<img width="200" src="img/clone-logo.png"><br>
+
+## Technologies Used
+
+- Java programming language
+- Java SE File I/O operations
+- Java SE Utils hashing algorithms
+
 ## Clone Installation Guide
 
 The ```.deb``` file is available for Ubuntu users in this repository.
 
 ```sudo dpkg -i clone-0.8.0-ubuntu.deb``` to install.
-
-See the README.txt inside the [clone-0.8.0-ubuntu-package](clone-0.7.1-ubuntu-package/) directory also.
 
 ## Clone User Guide
 
@@ -21,6 +29,8 @@ See the README.txt inside the [clone-0.8.0-ubuntu-package](clone-0.7.1-ubuntu-pa
 Clone is a version control software designed to manage your projects efficiently. This guide provides instructions on how to use Clone to manage your code repositories effectively.
 
 ```clone``` - To check whether the Clone app has been installed successfully
+
+![Clone app introduction](img/introduction.png)
 
 ### Initializing a Clone Repository
 To initialize a Clone repository in the specified target directory, run the following command:
@@ -43,14 +53,15 @@ After initializing the repository, you can use various other commands for differ
 
 ## Sample Demonstrations
 
-### Through The Terminal
-![Commands demonstration through terminal](img/demo-img-terminal.png)
+![Commands demonstration through vscode 1](img/image1.png)
 
-### Through VSCode
-![Commands demonstration through vscode 1](img/demo-img-vscode1.png)
-![Commands demonstration through vscode 2](img/demo-img-vscode2.png)
-![Commands demonstration through vscode 3](img/demo-img-vscode3.png)
-![Commands demonstration through vscode 4](img/demo-img-vscode4.png)
-![Commands demonstration through vscode 5](img/demo-img-vscode5.png)
-![Commands demonstration through vscode 6](img/demo-img-vscode6.png)
+![Commands demonstration through vscode 2](img/image2.png)
+
+![Commands demonstration through vscode 3](img/image3.png)
+
+![Commands demonstration through vscode 4](img/image4.png)
+
+![Commands demonstration through vscode 5](img/image5.png)
+
+![Commands demonstration through vscode 6](img/image6.png)
 

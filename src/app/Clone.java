@@ -55,9 +55,9 @@ public class Clone {
             case "start":
                 if (!folderBase.exists()) {
                     start();
-                    System.out.println("\n\tNew repository is created...\n");
+                    System.out.println("\n\tA new clone factory is created...\n");
 
-                }else System.out.println("\n\tAlready a repository\n");
+                }else System.out.println("\n\tAlready linked to a clone factory\n");
                 break;
 
             case "make":
@@ -68,7 +68,7 @@ public class Clone {
                     }
                     else System.out.println("\n\tCannot make clones while HEAD detached from main\n");
                 }
-                else System.out.println("\n\tNot a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning\n");
+                else System.out.println("\n\tNot linked to a clone factory. Use " + RED_COLOR + "clone start" + RESET + " to start cloning\n");
                 break;
 
             case "save":
@@ -78,7 +78,7 @@ public class Clone {
                         save();
                     } else System.out.println("\n\tCannot save clones while HEAD detached from main\n");
                 }
-                else System.out.println("\n\tNot a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning\n");
+                else System.out.println("\n\tNot linked to a clone factory. Use " + RED_COLOR + "clone start" + RESET + " to start cloning\n");
                 break;
 
             case "log":
@@ -86,7 +86,7 @@ public class Clone {
                     if (cloneList.size() == 0) takeClones();
                     showClones();
                 }
-                else System.out.println("\n\tNot a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning\n");
+                else System.out.println("\n\tNot linked to a clone factory. Use " + RED_COLOR + "clone start" + RESET + " to start cloning\n");
                 break;
 
             case "show":
@@ -97,7 +97,7 @@ public class Clone {
                     }
                     else System.out.println("\n\tCannot show the status of current clone while HEAD detached from main\n");
                 }
-                else System.out.println("\n\tNot a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning\n");
+                else System.out.println("\n\tNot linked to a clone factory. Use " + RED_COLOR + "clone start" + RESET + " to start cloning\n");
                 break;
 
             case "activate":
@@ -106,7 +106,7 @@ public class Clone {
                         selectClone(args[2]);
                     } else System.out.println("\n\tClone hashcode should be provided...\n");
 
-                } else System.out.println("\n\tNot a repository. Use " + RED_COLOR + "clone start" + RESET + " to start cloning\n");
+                } else System.out.println("\n\tNot linked to a clone factory. Use " + RED_COLOR + "clone start" + RESET + " to start cloning\n");
                 break;
 
             default:
