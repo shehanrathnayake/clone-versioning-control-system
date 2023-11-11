@@ -3,22 +3,22 @@ package app;
 import java.io.Serializable;
 
 public class FileDetails implements Serializable {
-    private String path;
+    private String hashcode;
     private byte[] buffer = null;
 
     public FileDetails() {
     }
-    public FileDetails(String path, byte[] buffer) {
-        this.path = path;
+    public FileDetails(String hashcode, byte[] buffer) {
+        this.hashcode = hashcode;
         this.buffer = buffer;
     }
 
-    public String getPath() {
-        return path;
+    public String getHashcode() {
+        return hashcode;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setHashcode(String hashcode) {
+        this.hashcode = hashcode;
     }
 
     public byte[] getBuffer() {
