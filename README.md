@@ -1,7 +1,7 @@
 # Clone Version Control System
 
 ### Version
-0.7.1
+0.8.0
 
 ### License
 Copyright &copy; 2023 Shehan Rathnayake. All Rights Reserved.<br>
@@ -9,22 +9,18 @@ This project is licensed under [MIT License](License.txt).
 
 ## Clone Installation Guide
 
-The installation files are available for Ubuntu users in ```.deb``` file and ```.tar.gz``` in the directory of [clone-0.7.1-ubuntu-package](clone-0.7.1-ubuntu-package/) in this repository.
+The installation files are available for Ubuntu users in ```.deb``` file in this repository.
 
-### ```.deb``` File Installation
-Use ```sudo dpkg -i clone-0.7.1-ubuntu.deb``` to install.
+```sudo dpkg -i clone-0.8.0-ubuntu.deb``` to install.
 
-
-### ```.tar.gz``` File Installation
-This ```.tar.gz``` file includes ```clone-vcs``` directory and ```clone``` file. Simply place ```clone-vcs``` in the ```/opt``` directory and ```clone``` file in the ```/usr/bin``` directory.
-
-
-See the README.txt inside the [clone-0.7.1-ubuntu-package](clone-0.7.1-ubuntu-package/) directory also.
+See the README.txt inside the [clone-0.8.0-ubuntu-package](clone-0.7.1-ubuntu-package/) directory also.
 
 ## Clone User Guide
 
 ### Introduction
 Clone is a version control software designed to manage your projects efficiently. This guide provides instructions on how to use Clone to manage your code repositories effectively.
+
+```clone``` - To see whether Clone has been installed successfully
 
 ### Initializing a Clone Repository
 To initialize a Clone repository in the specified target directory, run the following command:
@@ -36,6 +32,10 @@ Run this command only once to create the repository in the target directory.
 ### Using Other Commands
 After initializing the repository, you can use various other commands for different functionalities as needed in your development workflow.
 
+```clone [-h | --help]``` - To see the command list<br>
+```clone [-v | --version]``` - To see the version<br>
+
+```clone show``` - To see the current status of files<br>
 ```clone make``` - Getting ready all the files for saving<br>
 ```clone save``` - Saving a snapshot of the current project<br>
 ```clone log``` - Displaying all the clones saved<br>
