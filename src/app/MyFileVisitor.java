@@ -18,23 +18,12 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         Pattern pattern = Pattern.compile(Clone.mainRepoPath);
         Matcher matcher = pattern.matcher(path);
 
-
         if (file.toAbsolutePath().toString().equals(Clone.mainRepoPath + "uniqueclone.txt") || !matcher.find()) {
             byte[] buffer = getBytes(file);
             try {
                 String hashcode = Clone.calculateHashCode(buffer);
                 FileMeta fileMeta = new FileMeta(path, hashcode);
                 Clone.currentFileList.add(fileMeta);
-//                boolean isDuplicate = false;
-//                for (FileMeta lastCloneFileMeta : Clone.lastCloneFileList) {
-//                    if (lastCloneFileMeta.getHashcode().equals(hashcode)){
-//                        isDuplicate = true;
-//                        break;
-//                    }
-//                }
-//                if (!isDuplicate) {
-//                    Clone.newFilesList.add(fileMeta);
-//                }
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             }
@@ -51,7 +40,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
         } finally {
             bis.close();
         }
-
         return buffer;
     }
 
@@ -61,7 +49,6 @@ public class MyFileVisitor extends SimpleFileVisitor<Path> {
 
         try{
             bos.write(buffer);
-
         } finally {
             bos.close();
         }
