@@ -55,6 +55,10 @@ After initializing the repository, you can use various other commands for differ
 ```clone log``` - Displaying all the clones saved<br>
 ```clone activate <hashcode>``` - Traversing history through saved clones<br>
 
+![Commands demonstration through terminal](img/help.png)
+
+![Commands demonstration through terminal](img/commands.png)
+
 ## Sample Demonstrations
 
 ![Commands demonstration through vscode 1](img/image1.png)
